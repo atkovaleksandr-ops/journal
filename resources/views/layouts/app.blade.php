@@ -755,9 +755,43 @@
             align-items: center;
             justify-content: space-between;
             gap: 10px;
+            flex-wrap: wrap;
             color: #cbd5e1;
             font-weight: 700;
             font-size: 14px;
+        }
+
+        .teacher-card-top .muted {
+            flex: 1 1 118px;
+            min-width: 0;
+            text-align: right;
+            line-height: 1.35;
+        }
+
+        .group-count-badge {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 30px;
+            min-width: 92px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            color: #bae6fd;
+            background: rgba(14, 165, 233, 0.13);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            white-space: nowrap;
+        }
+
+        .group-count-badge strong {
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .group-count-badge span {
+            font-size: 12px;
+            line-height: 1;
         }
 
         .lesson-card h4,

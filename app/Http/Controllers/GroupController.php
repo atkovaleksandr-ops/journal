@@ -21,8 +21,12 @@ class GroupController extends Controller
     {
         $filters = [
             'q' => trim((string) $request->query('q', '')),
-            'sort' => $request->query('sort', 'name'),
+            'sort' => $request->query('sort', 'course_desc'),
         ];
+
+        if (!in_array($filters['sort'], ['course_desc', 'course_asc', 'name', 'students', 'subjects', 'lessons', 'newest'], true)) {
+            $filters['sort'] = 'course_desc';
+        }
 
         $groupsQuery = Group::withCount(['students', 'subjects', 'lessons'])
             ->when($filters['q'] !== '', function ($query) use ($filters) {
@@ -37,10 +41,21 @@ class GroupController extends Controller
             'subjects' => $groupsQuery->orderByDesc('subjects_count')->orderBy('name'),
             'lessons' => $groupsQuery->orderByDesc('lessons_count')->orderBy('name'),
             'newest' => $groupsQuery->latest(),
+            'course_desc', 'course_asc' => $groupsQuery->orderBy('name'),
             default => $groupsQuery->orderBy('name'),
         };
 
         $groups = $groupsQuery->get();
+
+        if (in_array($filters['sort'], ['course_desc', 'course_asc'], true)) {
+            $groups = $groups
+                ->sort(fn (Group $first, Group $second) => $this->compareGroupsByCourse(
+                    $first,
+                    $second,
+                    $filters['sort'] === 'course_desc'
+                ))
+                ->values();
+        }
 
         return view('groups.index', compact('groups', 'filters'));
     }
@@ -208,6 +223,26 @@ class GroupController extends Controller
             'course' => $course ?: 1,
             'group_number' => $groupNumber ?: 1,
         ];
+    }
+
+    private function compareGroupsByCourse(Group $first, Group $second, bool $descending): int
+    {
+        $firstIdentity = $this->groupIdentityFrom($first);
+        $secondIdentity = $this->groupIdentityFrom($second);
+
+        $courseCompare = $firstIdentity['course'] <=> $secondIdentity['course'];
+
+        if ($courseCompare !== 0) {
+            return $descending ? -$courseCompare : $courseCompare;
+        }
+
+        $numberCompare = $firstIdentity['group_number'] <=> $secondIdentity['group_number'];
+
+        if ($numberCompare !== 0) {
+            return $numberCompare;
+        }
+
+        return strnatcasecmp($first->name, $second->name);
     }
 
     private function shortGroupName(string $programName, int $course, int $groupNumber): string

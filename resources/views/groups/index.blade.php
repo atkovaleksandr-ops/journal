@@ -24,11 +24,13 @@
         <div class="field">
             <label for="sort">Сортировка</label>
             <select id="sort" name="sort">
+                <option value="course_desc" @selected($filters['sort'] === 'course_desc')>Старшие курсы сверху</option>
+                <option value="course_asc" @selected($filters['sort'] === 'course_asc')>Младшие курсы сверху</option>
                 <option value="name" @selected($filters['sort'] === 'name')>По названию</option>
                 <option value="students" @selected($filters['sort'] === 'students')>Больше студентов</option>
                 <option value="subjects" @selected($filters['sort'] === 'subjects')>Больше предметов</option>
                 <option value="lessons" @selected($filters['sort'] === 'lessons')>Больше уроков</option>
-                <option value="newest" @selected($filters['sort'] === 'newest')>Сначала новые</option>
+                <option value="newest" @selected($filters['sort'] === 'newest')>Недавно созданные</option>
             </select>
         </div>
 
@@ -41,9 +43,24 @@
     @if($groups->count() > 0)
         <div class="teacher-card-grid">
             @foreach($groups as $group)
+                @php
+                    $studentsCount = (int) $group->students_count;
+                    $studentsMod100 = $studentsCount % 100;
+                    $studentsMod10 = $studentsCount % 10;
+                    $studentsWord = $studentsMod100 >= 11 && $studentsMod100 <= 14
+                        ? 'студентов'
+                        : match ($studentsMod10) {
+                            1 => 'студент',
+                            2, 3, 4 => 'студента',
+                            default => 'студентов',
+                        };
+                @endphp
                 <article class="teacher-card">
                     <div class="teacher-card-top">
-                        <span class="badge">{{ $group->students_count }} студентов</span>
+                        <span class="group-count-badge">
+                            <strong>{{ $studentsCount }}</strong>
+                            <span>{{ $studentsWord }}</span>
+                        </span>
                         <span class="muted">{{ $group->subjects_count }} предметов · {{ $group->lessons_count }} уроков</span>
                     </div>
 

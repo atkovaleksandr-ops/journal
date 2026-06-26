@@ -171,6 +171,29 @@ class JournalWorkflowTest extends TestCase
         ]);
     }
 
+    public function test_groups_index_defaults_to_highest_course_first(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+
+        Group::create([
+            'name' => 'ПО-12',
+            'description' => 'Программное обеспечение, 1 курс, 2 группа',
+        ]);
+        Group::create([
+            'name' => 'ВТ-22',
+            'description' => 'Вычислительные технологии, 2 курс, 2 группа',
+        ]);
+        Group::create([
+            'name' => 'ПО-41',
+            'description' => 'Программное обеспечение, 4 курс, 1 группа',
+        ]);
+
+        $this->actingAs($teacher)
+            ->get(route('groups.index'))
+            ->assertOk()
+            ->assertSeeInOrder(['ПО-41', 'ВТ-22', 'ПО-12']);
+    }
+
     public function test_public_landing_install_and_contact_pages_render(): void
     {
         $this->get(route('welcome'))
