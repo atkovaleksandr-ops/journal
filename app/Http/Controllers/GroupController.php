@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
 use App\Models\Group;
+use App\Models\Lesson;
+use App\Models\Student;
+use App\Models\Subject;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GroupController extends Controller
 {
@@ -103,7 +109,43 @@ class GroupController extends Controller
      */
     public function destroy(Group $group)
     {
-        $group->delete();
+        $group->load(['students.user', 'subjects', 'lessons']);
+
+        DB::transaction(function () use ($group) {
+            $studentIds = $group->students->pluck('id');
+            $subjectIds = $group->subjects->pluck('id');
+            $lessonIds = $group->lessons->pluck('id');
+            $studentUserIds = $group->students
+                ->pluck('user')
+                ->filter(fn ($user) => $user && $user->role === 'student')
+                ->pluck('id');
+
+            if ($studentIds->isNotEmpty() || $subjectIds->isNotEmpty() || $lessonIds->isNotEmpty()) {
+                Attendance::query()
+                    ->where(function ($query) use ($studentIds, $subjectIds, $lessonIds) {
+                        if ($studentIds->isNotEmpty()) {
+                            $query->whereIn('student_id', $studentIds);
+                        }
+
+                        if ($subjectIds->isNotEmpty()) {
+                            $method = $studentIds->isNotEmpty() ? 'orWhereIn' : 'whereIn';
+                            $query->{$method}('subject_id', $subjectIds);
+                        }
+
+                        if ($lessonIds->isNotEmpty()) {
+                            $method = $studentIds->isNotEmpty() || $subjectIds->isNotEmpty() ? 'orWhereIn' : 'whereIn';
+                            $query->{$method}('lesson_id', $lessonIds);
+                        }
+                    })
+                    ->delete();
+            }
+
+            Lesson::whereIn('id', $lessonIds)->delete();
+            Subject::whereIn('id', $subjectIds)->delete();
+            Student::whereIn('id', $studentIds)->delete();
+            User::whereIn('id', $studentUserIds)->delete();
+            $group->delete();
+        });
 
         return redirect()
             ->route('groups.index')

@@ -50,6 +50,14 @@
             </div>
 
             <div class="field field-full">
+                <label for="current_login_password">Текущий пароль для входа</label>
+                <div class="password-line">
+                    <input id="current_login_password" type="password" value="{{ $studentPassword ?: 'Пароль не задан' }}" readonly>
+                    <button type="button" class="btn btn-secondary btn-compact" data-toggle-password="#current_login_password">Показать</button>
+                </div>
+            </div>
+
+            <div class="field field-full">
                 <label for="login_password">Новый пароль для входа</label>
                 <div class="password-line">
                     <input id="login_password" type="password" name="login_password" value="{{ old('login_password') }}" placeholder="Оставьте пустым, если пароль менять не нужно" autocomplete="new-password">

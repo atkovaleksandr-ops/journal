@@ -31,7 +31,7 @@ class AttendanceController extends Controller
             'sort' => $request->query('sort', 'date_desc'),
         ];
 
-        if (!in_array($filters['status'], ['', 'filled', 'not_filled', 'has_absent'], true)) {
+        if (!in_array($filters['status'], ['', 'filled', 'has_absent'], true)) {
             $filters['status'] = '';
         }
 
@@ -78,10 +78,6 @@ class AttendanceController extends Controller
         $lessons = $allLessons->filter(function ($lesson) use ($filters, $studentsCount) {
             if ($filters['status'] === 'filled') {
                 return $studentsCount > 0 && $lesson->attendances_count >= $studentsCount;
-            }
-
-            if ($filters['status'] === 'not_filled') {
-                return $lesson->attendances_count < $studentsCount;
             }
 
             if ($filters['status'] === 'has_absent') {
@@ -197,7 +193,7 @@ class AttendanceController extends Controller
         $returnTo = $this->safeReturnTo($request->input('return_to'), $lesson);
         $data = $request->validate([
             'attendance' => ['required', 'array'],
-            'attendance.*.status' => ['nullable', Rule::in(Attendance::VALID_STATUSES)],
+            'attendance.*.status' => ['required', Rule::in(Attendance::VALID_STATUSES)],
             'attendance.*.note' => ['nullable', 'string', 'max:500'],
             'return_to' => ['nullable', 'string'],
         ]);
@@ -205,12 +201,7 @@ class AttendanceController extends Controller
         $studentIds = $lesson->group->students()->pluck('students.id');
 
         foreach ($studentIds as $studentId) {
-            $status = $data['attendance'][$studentId]['status'] ?? null;
-
-            if (!in_array($status, Attendance::VALID_STATUSES, true)) {
-                Attendance::where('lesson_id', $lesson->id)->where('student_id', $studentId)->delete();
-                continue;
-            }
+            $status = $data['attendance'][$studentId]['status'] ?? Attendance::STATUS_PRESENT;
 
             $note = trim((string) ($data['attendance'][$studentId]['note'] ?? ''));
 

@@ -54,6 +54,11 @@
                         <a href="{{ route('groups.attendance', $group) }}" class="btn btn-primary">Журнал</a>
                         <a href="{{ route('students.index', ['group_id' => $group->id]) }}" class="btn btn-secondary">Студенты</a>
                         <a href="{{ route('groups.show', $group) }}" class="btn btn-secondary">Карточка</a>
+                        <form action="{{ route('groups.destroy', $group) }}" method="POST" onsubmit="return confirm('Удалить группу вместе со студентами, предметами, уроками и посещаемостью?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </form>
                     </div>
                 </article>
             @endforeach

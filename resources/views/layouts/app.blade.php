@@ -725,50 +725,6 @@
             margin-top: auto;
         }
 
-        .lesson-health {
-            display: grid;
-            gap: 10px;
-            margin-top: 2px;
-        }
-
-        .attendance-segment-bar {
-            position: relative;
-            display: flex;
-            width: 100%;
-            height: 10px;
-            overflow: hidden;
-            border-radius: 999px;
-            background: rgba(15, 23, 42, 0.72);
-            border: 1px solid rgba(148, 163, 184, 0.16);
-        }
-
-        .attendance-segment {
-            display: block;
-            min-width: 0;
-            height: 100%;
-        }
-
-        .attendance-segment-present {
-            background: linear-gradient(90deg, #16a34a, #22c55e);
-        }
-
-        .attendance-segment-absent {
-            background: linear-gradient(90deg, #f97316, #fb7185);
-        }
-
-        .lesson-health-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 8px;
-            color: #94a3b8;
-            font-size: 13px;
-            line-height: 1.35;
-        }
-
-        .lesson-health-grid strong {
-            color: #ffffff;
-        }
-
         .note-input {
             min-width: 210px;
         }
@@ -1292,6 +1248,15 @@
             filter: brightness(1.08);
         }
 
+        .btn:disabled,
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            transform: none;
+            filter: none;
+            box-shadow: none;
+        }
+
         .btn-secondary {
             background: rgba(148, 163, 184, 0.18);
             color: #e5e7eb;
@@ -1649,7 +1614,6 @@
 
             .filter-actions,
             .lesson-actions,
-            .lesson-health-grid,
             .subject-lesson-head,
             .workspace-head {
                 align-items: stretch;
@@ -1676,10 +1640,6 @@
             }
 
             .lesson-actions {
-                grid-template-columns: 1fr;
-            }
-
-            .lesson-health-grid {
                 grid-template-columns: 1fr;
             }
 

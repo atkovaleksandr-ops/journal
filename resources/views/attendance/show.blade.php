@@ -36,37 +36,6 @@
         </div>
     @endif
 
-    <div class="stat-grid compact-stats">
-        <div class="stat-card">
-            <span class="stat-value">{{ $summary['students'] }}</span>
-            <span class="stat-label">Студенты</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-value">{{ $selectedSubject ? 1 : $subjects->count() }}</span>
-            <span class="stat-label">{{ $selectedSubject ? 'Предмет' : 'Предметы' }}</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-value">{{ $summary['lessons'] }}</span>
-            <span class="stat-label">Уроки</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-value">{{ $summary['filled'] }}</span>
-            <span class="stat-label">Заполнены</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-value">{{ $summary['present'] }}</span>
-            <span class="stat-label">Присутствия</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-value">{{ $summary['absent'] }}</span>
-            <span class="stat-label">Пропуски</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-value">{{ $summary['not_marked'] }}</span>
-            <span class="stat-label">Не отмечено</span>
-        </div>
-    </div>
-
     @if($selectedSubject)
         <div class="panel teacher-workspace">
             <div class="workspace-head">
@@ -146,7 +115,6 @@
                 <select id="status" name="status">
                     <option value="">Все уроки</option>
                     <option value="filled" @selected($filters['status'] === 'filled')>Заполненные</option>
-                    <option value="not_filled" @selected($filters['status'] === 'not_filled')>Нужно заполнить</option>
                     <option value="has_absent" @selected($filters['status'] === 'has_absent')>Есть пропуски</option>
                 </select>
             </div>
@@ -192,13 +160,6 @@
                                 <p>{{ $item['lessons'] }} уроков</p>
                             </div>
                             <span class="subject-toggle-meta">
-                                <span class="badge">{{ $item['filled'] }}/{{ $item['lessons'] }} заполнено</span>
-                                @if($item['absent'] > 0)
-                                    <span class="badge badge-warning-soft">{{ $item['absent'] }} пропусков</span>
-                                @endif
-                                @if($item['not_marked'] > 0)
-                                    <span class="badge">{{ $item['not_marked'] }} пустых</span>
-                                @endif
                                 <span class="subject-toggle-icon" aria-hidden="true">→</span>
                             </span>
                         </a>
@@ -218,14 +179,12 @@
                     @php
                         $markedCount = $lesson->attendances_count;
                         $isFilled = $studentsCount > 0 && $markedCount >= $studentsCount;
-                        $notMarkedCount = max($studentsCount - $markedCount, 0);
-                        $progressPercent = $studentsCount > 0 ? min(100, (int) round($markedCount / $studentsCount * 100)) : 0;
                     @endphp
 
                     <article class="lesson-card">
                         <div class="lesson-meta">
                             <span>{{ \Illuminate\Support\Carbon::parse($lesson->date)->format('d.m.Y') }}</span>
-                            <span class="badge {{ $isFilled ? 'badge-success' : 'badge-warning-soft' }}">{{ $markedCount }}/{{ $studentsCount }}</span>
+                            <span class="badge {{ $isFilled ? 'badge-success' : 'badge-warning-soft' }}">{{ $isFilled ? 'Заполнено' : 'В работе' }}</span>
                         </div>
 
                         <h4>{{ $lesson->topic ?: 'Без темы' }}</h4>
@@ -233,18 +192,6 @@
                         @if($lesson->description)
                             <p>{{ $lesson->description }}</p>
                         @endif
-
-                        <div class="lesson-health">
-                            <div class="attendance-segment-bar" aria-label="Заполнено {{ $progressPercent }}%">
-                                <span class="attendance-segment attendance-segment-present" style="width: {{ $studentsCount > 0 ? ($lesson->present_count / $studentsCount * 100) : 0 }}%"></span>
-                                <span class="attendance-segment attendance-segment-absent" style="width: {{ $studentsCount > 0 ? ($lesson->absent_count / $studentsCount * 100) : 0 }}%"></span>
-                            </div>
-                            <div class="lesson-health-grid">
-                                <span><strong>{{ $lesson->present_count }}</strong> присутствий</span>
-                                <span><strong>{{ $lesson->absent_count }}</strong> пропусков</span>
-                                <span><strong>{{ $notMarkedCount }}</strong> пустых</span>
-                            </div>
-                        </div>
 
                         <div class="lesson-actions">
                             <a href="{{ route('attendance.lesson.mark', ['lesson' => $lesson->id, 'return_to' => request()->fullUrl()]) }}" class="btn btn-primary">{{ $isFilled ? 'Открыть' : 'Заполнить' }}</a>

@@ -110,9 +110,11 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
+        $student->loadMissing('user');
         $groups = Group::orderBy('name')->get();
+        $studentPassword = $student->login_password ?: $student->user?->login_password;
 
-        return view('students.edit', compact('student', 'groups'));
+        return view('students.edit', compact('student', 'groups', 'studentPassword'));
     }
 
     /**
@@ -207,10 +209,12 @@ class StudentController extends Controller
 
         if ($password) {
             $payload['password'] = Hash::make($password);
+            $payload['login_password'] = $password;
         }
 
         if (!$user) {
             $payload['password'] = Hash::make($password ?: self::DEFAULT_STUDENT_PASSWORD);
+            $payload['login_password'] = $password ?: self::DEFAULT_STUDENT_PASSWORD;
             $user = User::create($payload);
         } else {
             $user->update($payload);

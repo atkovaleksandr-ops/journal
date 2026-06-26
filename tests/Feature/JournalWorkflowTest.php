@@ -98,7 +98,7 @@ class JournalWorkflowTest extends TestCase
 
         $this->actingAs($teacher)
             ->post(route('subjects.store'), [
-                'name' => 'mathematics',
+                'name' => '  mathematics  ',
                 'description' => 'Duplicate assignment',
                 'group_id' => $group->id,
             ])
@@ -202,15 +202,19 @@ class JournalWorkflowTest extends TestCase
             'status' => 'absent',
             'note' => 'Медсправка',
         ]);
-        $this->actingAs($teacher)->post(route('attendance.lesson.save', $lesson), [
-            'attendance' => [
-                $student->id => ['status' => ''],
-            ],
-        ]);
+        $this->actingAs($teacher)
+            ->from(route('attendance.lesson.mark', $lesson))
+            ->post(route('attendance.lesson.save', $lesson), [
+                'attendance' => [
+                    $student->id => ['status' => ''],
+                ],
+            ])
+            ->assertSessionHasErrors("attendance.{$student->id}.status");
 
-        $this->assertDatabaseMissing('attendances', [
+        $this->assertDatabaseHas('attendances', [
             'lesson_id' => $lesson->id,
             'student_id' => $student->id,
+            'status' => 'absent',
         ]);
     }
 
@@ -279,7 +283,8 @@ class JournalWorkflowTest extends TestCase
             ->get(route('groups.attendance', $group))
             ->assertOk()
             ->assertDontSee('name="return_to"', false)
-            ->assertDontSee('name="description"', false);
+            ->assertDontSee('name="description"', false)
+            ->assertDontSee('not_filled', false);
 
         $this->actingAs($teacher)
             ->get(route('groups.attendance', [
@@ -289,6 +294,117 @@ class JournalWorkflowTest extends TestCase
             ->assertOk()
             ->assertSee('name="return_to"', false)
             ->assertSee('name="description"', false);
+    }
+
+    public function test_attendance_mark_form_uses_only_present_or_absent_choices(): void
+    {
+        $teacher = User::factory()->create([
+            'role' => 'teacher',
+        ]);
+
+        $group = Group::create(['name' => 'PO-22']);
+        $student = Student::create([
+            'first_name' => 'Test',
+            'last_name' => 'Student',
+            'student_number' => 'S-201',
+            'email' => 'student201@example.com',
+            'group_id' => $group->id,
+            'login_password' => 'student123',
+        ]);
+
+        $subject = Subject::create([
+            'name' => 'Algorithms',
+            'group_id' => $group->id,
+            'teacher_id' => $teacher->id,
+        ]);
+
+        $lesson = Lesson::create([
+            'group_id' => $group->id,
+            'subject_id' => $subject->id,
+            'teacher_id' => $teacher->id,
+            'date' => '2026-06-12',
+            'topic' => 'Validation',
+        ]);
+
+        $this->actingAs($teacher)
+            ->get(route('attendance.lesson.mark', $lesson))
+            ->assertOk()
+            ->assertSee('Присутствовал')
+            ->assertSee('Отсутствовал')
+            ->assertDontSee('Не отмечено')
+            ->assertDontSee('Снять отметки');
+    }
+
+    public function test_deleting_group_removes_its_learning_data_and_student_accounts(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $studentUser = User::factory()->create([
+            'role' => 'student',
+            'email' => 'student-delete@example.com',
+            'login_password' => 'student123',
+        ]);
+
+        $group = Group::create(['name' => 'PO-41']);
+        $student = Student::create([
+            'first_name' => 'Delete',
+            'last_name' => 'Student',
+            'student_number' => 'S-301',
+            'email' => 'student-delete@example.com',
+            'group_id' => $group->id,
+            'user_id' => $studentUser->id,
+            'login_password' => 'student123',
+        ]);
+        $subject = Subject::create([
+            'name' => 'Programming',
+            'group_id' => $group->id,
+            'teacher_id' => $teacher->id,
+        ]);
+        $lesson = Lesson::create([
+            'group_id' => $group->id,
+            'subject_id' => $subject->id,
+            'teacher_id' => $teacher->id,
+            'date' => '2026-06-12',
+            'topic' => 'Loops',
+        ]);
+        $attendance = Attendance::create([
+            'lesson_id' => $lesson->id,
+            'student_id' => $student->id,
+            'subject_id' => $subject->id,
+            'teacher_id' => $teacher->id,
+            'date' => '2026-06-12',
+            'status' => 'present',
+        ]);
+
+        $this->actingAs($teacher)
+            ->delete(route('groups.destroy', $group))
+            ->assertRedirect(route('groups.index'));
+
+        $this->assertDatabaseMissing('groups', ['id' => $group->id]);
+        $this->assertDatabaseMissing('students', ['id' => $student->id]);
+        $this->assertDatabaseMissing('subjects', ['id' => $subject->id]);
+        $this->assertDatabaseMissing('lessons', ['id' => $lesson->id]);
+        $this->assertDatabaseMissing('attendances', ['id' => $attendance->id]);
+        $this->assertDatabaseMissing('users', ['id' => $studentUser->id]);
+    }
+
+    public function test_student_edit_page_shows_current_login_password(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $group = Group::create(['name' => 'PO-22']);
+        $student = Student::create([
+            'first_name' => 'Password',
+            'last_name' => 'Student',
+            'student_number' => 'S-401',
+            'email' => 'student401@example.com',
+            'group_id' => $group->id,
+            'login_password' => 'student123',
+        ]);
+
+        $this->actingAs($teacher)
+            ->get(route('students.edit', $student))
+            ->assertOk()
+            ->assertSee('current_login_password', false)
+            ->assertSee('value="student123"', false);
     }
 
     public function test_student_card_shows_attendance_summary_by_subject(): void

@@ -34,7 +34,6 @@
                 <div class="filter-actions">
                     <button type="button" class="btn btn-secondary" data-set-attendance="present">Все присутствовали</button>
                     <button type="button" class="btn btn-secondary" data-set-attendance="absent">Все отсутствовали</button>
-                    <button type="button" class="btn btn-secondary" data-set-attendance="">Снять отметки</button>
                 </div>
             </div>
 
@@ -44,7 +43,7 @@
                     @foreach($lesson->group->students->sortBy([['last_name', 'asc'], ['first_name', 'asc']]) as $student)
                         @php
                             $savedStatus = $attendances->get($student->id)?->status;
-                            $currentStatus = in_array($savedStatus, ['present', 'absent'], true) ? $savedStatus : null;
+                            $currentStatus = in_array($savedStatus, ['present', 'absent'], true) ? $savedStatus : 'present';
                         @endphp
                         <tr data-student-row data-search="{{ mb_strtolower($student->last_name . ' ' . $student->first_name . ' ' . $student->student_number . ' ' . $student->email) }}">
                             <td data-label="Студент">
@@ -52,8 +51,7 @@
                                 <div class="muted">{{ $student->student_number ?: 'Номер не указан' }}</div>
                             </td>
                             <td data-label="Статус посещения">
-                                <select name="attendance[{{ $student->id }}][status]" data-attendance-select>
-                                    <option value="" @selected(!$currentStatus)>Не отмечено</option>
+                                <select name="attendance[{{ $student->id }}][status]" data-attendance-select required>
                                     <option value="present" @selected($currentStatus === 'present')>Присутствовал</option>
                                     <option value="absent" @selected($currentStatus === 'absent')>Отсутствовал</option>
                                 </select>

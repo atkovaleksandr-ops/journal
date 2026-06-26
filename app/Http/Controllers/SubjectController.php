@@ -75,7 +75,7 @@ class SubjectController extends Controller
             'description' => ['nullable', 'string'],
         ]);
 
-        $validated['name'] = trim($validated['name']);
+        $validated['name'] = $this->cleanSubjectName($validated['name']);
         $this->ensureTeacherAssignmentIsUnique($validated['name'], $validated['group_id']);
 
         $coTeachers = $this->matchingAssignments($validated['name'], $validated['group_id'])
@@ -148,7 +148,7 @@ class SubjectController extends Controller
             'description' => ['nullable', 'string'],
         ]);
 
-        $validated['name'] = trim($validated['name']);
+        $validated['name'] = $this->cleanSubjectName($validated['name']);
         $this->ensureTeacherAssignmentIsUnique(
             $validated['name'],
             $validated['group_id'],
@@ -180,12 +180,14 @@ class SubjectController extends Controller
 
     private function ensureTeacherAssignmentIsUnique(string $name, int|string $groupId, ?int $ignoreId = null): void
     {
+        $normalizedName = $this->subjectNameKey($name);
+
         $duplicate = Subject::query()
             ->where('teacher_id', auth()->id())
             ->where('group_id', $groupId)
-            ->whereRaw('LOWER(name) = ?', [mb_strtolower($name)])
             ->when($ignoreId, fn ($query) => $query->whereKeyNot($ignoreId))
-            ->exists();
+            ->get(['id', 'name'])
+            ->contains(fn (Subject $subject) => $this->subjectNameKey($subject->name) === $normalizedName);
 
         if ($duplicate) {
             throw ValidationException::withMessages([
@@ -196,11 +198,14 @@ class SubjectController extends Controller
 
     private function matchingAssignments(string $name, int|string $groupId)
     {
+        $normalizedName = $this->subjectNameKey($name);
+
         return Subject::query()
             ->with('teacher:id,name')
             ->where('group_id', $groupId)
-            ->whereRaw('LOWER(name) = ?', [mb_strtolower($name)])
-            ->get();
+            ->get()
+            ->filter(fn (Subject $subject) => $this->subjectNameKey($subject->name) === $normalizedName)
+            ->values();
     }
 
     private function attachCoTeachers($subjects): void
@@ -233,6 +238,16 @@ class SubjectController extends Controller
 
     private function assignmentKey(string $name, int|string|null $groupId): string
     {
-        return mb_strtolower(trim($name)).'|'.$groupId;
+        return $this->subjectNameKey($name).'|'.$groupId;
+    }
+
+    private function cleanSubjectName(string $name): string
+    {
+        return trim((string) preg_replace('/\s+/u', ' ', trim($name)));
+    }
+
+    private function subjectNameKey(string $name): string
+    {
+        return mb_strtolower($this->cleanSubjectName($name));
     }
 }

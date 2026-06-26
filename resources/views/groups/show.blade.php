@@ -11,6 +11,11 @@
         <div class="actions">
             <a href="{{ route('groups.attendance', $group) }}" class="btn btn-primary">Журнал</a>
             <a href="{{ route('groups.edit', $group) }}" class="btn btn-warning">Редактировать</a>
+            <form action="{{ route('groups.destroy', $group) }}" method="POST" onsubmit="return confirm('Удалить группу вместе со студентами, предметами, уроками и посещаемостью?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
             <a href="{{ route('groups.index') }}" class="btn btn-secondary">Все группы</a>
         </div>
     </div>
