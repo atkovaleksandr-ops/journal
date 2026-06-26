@@ -248,6 +248,57 @@
             margin: 18px 0;
         }
 
+        .group-builder {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(240px, 0.42fr);
+            gap: 18px;
+            align-items: stretch;
+            margin: 18px 0;
+        }
+
+        .group-builder-fields {
+            display: grid;
+            gap: 16px;
+            min-width: 0;
+        }
+
+        .group-builder-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(150px, 1fr));
+            gap: 14px;
+        }
+
+        .group-code-card {
+            display: grid;
+            align-content: center;
+            gap: 10px;
+            min-height: 188px;
+            padding: 20px;
+            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(14, 165, 233, 0.16), rgba(22, 163, 74, 0.1));
+            border: 1px solid rgba(56, 189, 248, 0.28);
+        }
+
+        .group-code-kicker {
+            color: #bae6fd;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .group-code-value {
+            color: #ffffff;
+            font-size: 42px;
+            line-height: 1;
+            letter-spacing: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .group-code-text {
+            margin: 0;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
         .stat-card,
         .dashboard-card {
             background: rgba(30, 41, 59, 0.66);
@@ -1583,6 +1634,7 @@
             .stat-grid,
             .dashboard-grid,
             .form-grid,
+            .group-builder,
             .filter-panel,
             .lesson-form-grid,
             .lesson-card-list,
@@ -1598,6 +1650,18 @@
 
             .group-chip {
                 justify-content: space-between;
+            }
+
+            .group-builder-row {
+                grid-template-columns: 1fr;
+            }
+
+            .group-code-card {
+                min-height: 150px;
+            }
+
+            .group-code-value {
+                font-size: 34px;
             }
 
             .lesson-mark-tools {
