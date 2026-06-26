@@ -45,8 +45,8 @@ class DemoSeeder extends Seeder
         );
 
         $group = Group::updateOrCreate(
-            ['name' => 'DEMO-21'],
-            ['description' => 'Demo group for public preview'],
+            ['name' => 'ВТ-22'],
+            ['description' => 'Вычислительные технологии, 2 курс, 2 группа'],
         );
 
         $student = Student::updateOrCreate(

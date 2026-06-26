@@ -10,6 +10,7 @@ use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class GroupController extends Controller
 {
@@ -57,12 +58,10 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-        ]);
+        $payload = $this->groupPayload($this->validateGroupIdentity($request));
+        $this->ensureGroupNameIsUnique($payload['name']);
 
-        Group::create($validated);
+        Group::create($payload);
 
         return redirect()
             ->route('groups.index')
@@ -84,7 +83,9 @@ class GroupController extends Controller
      */
     public function edit(Group $group)
     {
-        return view('groups.edit', compact('group'));
+        $groupIdentity = $this->groupIdentityFrom($group);
+
+        return view('groups.edit', compact('group', 'groupIdentity'));
     }
 
     /**
@@ -92,12 +93,10 @@ class GroupController extends Controller
      */
     public function update(Request $request, Group $group)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-        ]);
+        $payload = $this->groupPayload($this->validateGroupIdentity($request));
+        $this->ensureGroupNameIsUnique($payload['name'], $group->id);
 
-        $group->update($validated);
+        $group->update($payload);
 
         return redirect()
             ->route('groups.index')
@@ -150,5 +149,79 @@ class GroupController extends Controller
         return redirect()
             ->route('groups.index')
             ->with('success', 'Группа удалена.');
+    }
+
+    private function validateGroupIdentity(Request $request): array
+    {
+        return $request->validate([
+            'program_name' => ['required', 'string', 'max:255'],
+            'course' => ['required', 'integer', 'min:1', 'max:6'],
+            'group_number' => ['required', 'integer', 'min:1', 'max:9'],
+        ]);
+    }
+
+    private function groupPayload(array $validated): array
+    {
+        $programName = $this->cleanProgramName($validated['program_name']);
+        $course = (int) $validated['course'];
+        $groupNumber = (int) $validated['group_number'];
+
+        return [
+            'name' => $this->shortGroupName($programName, $course, $groupNumber),
+            'description' => "{$programName}, {$course} курс, {$groupNumber} группа",
+        ];
+    }
+
+    private function ensureGroupNameIsUnique(string $name, ?int $ignoreId = null): void
+    {
+        $exists = Group::query()
+            ->where('name', $name)
+            ->when($ignoreId, fn ($query) => $query->whereKeyNot($ignoreId))
+            ->exists();
+
+        if ($exists) {
+            throw ValidationException::withMessages([
+                'group_number' => "Группа {$name} уже существует. Измените курс или номер группы.",
+            ]);
+        }
+    }
+
+    private function groupIdentityFrom(Group $group): array
+    {
+        $programName = $group->description ?: $group->name;
+        $course = null;
+        $groupNumber = null;
+
+        if (preg_match('/^(.*?),\s*(\d+)\s*курс(?:,\s*(\d+)\s*группа)?/u', (string) $group->description, $matches)) {
+            $programName = trim($matches[1]);
+            $course = (int) $matches[2];
+            $groupNumber = isset($matches[3]) ? (int) $matches[3] : null;
+        }
+
+        if (preg_match('/-(\d)(\d)$/u', $group->name, $matches)) {
+            $course ??= (int) $matches[1];
+            $groupNumber ??= (int) $matches[2];
+        }
+
+        return [
+            'program_name' => $this->cleanProgramName($programName),
+            'course' => $course ?: 1,
+            'group_number' => $groupNumber ?: 1,
+        ];
+    }
+
+    private function shortGroupName(string $programName, int $course, int $groupNumber): string
+    {
+        $words = preg_split('/[\s\-]+/u', $this->cleanProgramName($programName), -1, PREG_SPLIT_NO_EMPTY);
+        $initials = collect($words)
+            ->map(fn (string $word) => mb_strtoupper(mb_substr($word, 0, 1)))
+            ->join('');
+
+        return "{$initials}-{$course}{$groupNumber}";
+    }
+
+    private function cleanProgramName(string $value): string
+    {
+        return trim((string) preg_replace('/\s+/u', ' ', $value));
     }
 }

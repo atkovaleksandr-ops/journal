@@ -130,6 +130,47 @@ class JournalWorkflowTest extends TestCase
         $this->actingAs($teacher)->get(route('subjects.show', $subject))->assertOk();
     }
 
+    public function test_group_short_name_is_generated_from_program_course_and_number(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+
+        $this->actingAs($teacher)
+            ->post(route('groups.store'), [
+                'program_name' => 'Вычислительные технологии',
+                'course' => 2,
+                'group_number' => 2,
+            ])
+            ->assertRedirect(route('groups.index'));
+
+        $this->assertDatabaseHas('groups', [
+            'name' => 'ВТ-22',
+            'description' => 'Вычислительные технологии, 2 курс, 2 группа',
+        ]);
+    }
+
+    public function test_group_short_name_updates_with_same_template(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        $group = Group::create([
+            'name' => 'OLD-11',
+            'description' => 'Старое название',
+        ]);
+
+        $this->actingAs($teacher)
+            ->patch(route('groups.update', $group), [
+                'program_name' => 'Программное обеспечение',
+                'course' => 4,
+                'group_number' => 1,
+            ])
+            ->assertRedirect(route('groups.index'));
+
+        $this->assertDatabaseHas('groups', [
+            'id' => $group->id,
+            'name' => 'ПО-41',
+            'description' => 'Программное обеспечение, 4 курс, 1 группа',
+        ]);
+    }
+
     public function test_public_landing_install_and_contact_pages_render(): void
     {
         $this->get(route('welcome'))
