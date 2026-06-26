@@ -1,0 +1,82 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Редактировать предмет</h1>
+            <p class="page-subtitle">{{ $subject->name }}</p>
+        </div>
+    </div>
+
+    <form action="{{ route('subjects.update', $subject) }}" method="POST" class="stack">
+        @csrf
+        @method('PATCH')
+
+        <div class="form-grid">
+            <div class="field">
+                <label for="name">Название предмета</label>
+                <input id="name" type="text" name="name" value="{{ old('name', $subject->name) }}" required>
+                @error('name') <div class="error-message">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="field">
+                <label for="group_id">Группа</label>
+                <select id="group_id" name="group_id" required>
+                    @foreach($groups as $group)
+                        <option value="{{ $group->id }}" @selected(old('group_id', $subject->group_id) == $group->id)>{{ $group->name }}</option>
+                    @endforeach
+                </select>
+                @error('group_id') <div class="error-message">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="field field-full">
+                <label for="description">Описание</label>
+                <textarea id="description" name="description" rows="4">{{ old('description', $subject->description) }}</textarea>
+                @error('description') <div class="error-message">{{ $message }}</div> @enderror
+            </div>
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="btn btn-success">Сохранить изменения</button>
+            <a href="{{ route('subjects.index') }}" class="btn btn-secondary">Назад</a>
+        </div>
+    </form>
+
+    <div id="assignmentNotice" class="alert" hidden></div>
+</div>
+
+@php
+    $assignmentPayload = $existingAssignments->map(fn ($item) => [
+        'name' => mb_strtolower(trim($item->name)),
+        'group_id' => (string) $item->group_id,
+        'teacher' => $item->teacher?->name,
+    ])->values();
+@endphp
+
+<script>
+    const assignments = @json($assignmentPayload);
+    const nameField = document.querySelector('#name');
+    const groupField = document.querySelector('#group_id');
+    const notice = document.querySelector('#assignmentNotice');
+
+    function updateAssignmentNotice() {
+        const name = nameField.value.trim().toLocaleLowerCase('ru');
+        const groupId = groupField.value;
+        const matches = assignments.filter((item) => item.name === name && item.group_id === groupId);
+
+        if (!name || !groupId || matches.length === 0) {
+            notice.hidden = true;
+            return;
+        }
+
+        const teachers = [...new Set(matches.map((item) => item.teacher).filter(Boolean))];
+        notice.textContent = `Совпадающее назначение уже есть у: ${teachers.join(', ')}. У каждого преподавателя сохраняется отдельный журнал.`;
+        notice.hidden = false;
+    }
+
+    nameField.addEventListener('input', updateAssignmentNotice);
+    groupField.addEventListener('change', updateAssignmentNotice);
+    updateAssignmentNotice();
+</script>
+@endsection
