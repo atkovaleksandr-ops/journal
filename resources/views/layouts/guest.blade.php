@@ -210,6 +210,38 @@
                 margin-bottom: 0 !important;
             }
 
+            .auth-label-row {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                gap: 12px;
+                min-width: 0;
+            }
+
+            .auth-help-link {
+                flex: 0 0 auto;
+                font-size: 13px;
+                text-align: right;
+                text-decoration: none;
+                white-space: nowrap;
+            }
+
+            .auth-help-link:hover,
+            .auth-alt-action a:hover {
+                text-decoration: underline;
+            }
+
+            .auth-options {
+                display: grid;
+                gap: 8px;
+                margin-top: -1px;
+                padding: 2px 0 0;
+            }
+
+            .auth-options-single {
+                padding-bottom: 2px;
+            }
+
             .auth-actions {
                 display: flex;
                 align-items: center;
@@ -220,6 +252,7 @@
 
             .auth-submit-row {
                 margin-top: 2px;
+                display: grid;
             }
 
             .auth-submit {
@@ -233,6 +266,23 @@
                 color: #cbd5e1;
                 font-size: 15px;
                 line-height: 1.45;
+            }
+
+            .auth-alt-action {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 5px;
+                color: #cbd5e1;
+                font-size: 14px;
+                line-height: 1.45;
+                text-align: center;
+                padding-top: 2px;
+            }
+
+            .auth-alt-action a {
+                text-decoration: none;
             }
 
             .guest-card .flex.items-center.justify-between > a {
@@ -291,6 +341,10 @@
                 .auth-actions {
                     align-items: flex-start;
                     flex-direction: column;
+                    gap: 10px;
+                }
+
+                .auth-label-row {
                     gap: 10px;
                 }
             }

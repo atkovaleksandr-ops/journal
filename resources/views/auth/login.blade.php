@@ -16,35 +16,37 @@
         </div>
 
         <div class="auth-field">
-            <label for="password">Пароль</label>
+            <div class="auth-label-row">
+                <label for="password">Пароль</label>
+
+                @if (Route::has('password.request'))
+                    <a class="auth-help-link" href="{{ route('password.request', [], false) }}">
+                        Забыли пароль?
+                    </a>
+                @endif
+            </div>
             <input id="password" class="auth-input" type="password" name="password" required autocomplete="current-password">
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <label for="show_password" class="remember-control">
-            <input id="show_password" type="checkbox" data-show-password="#password">
-            <span>Показать пароль</span>
-        </label>
+        <div class="auth-options">
+            <label for="show_password" class="remember-control">
+                <input id="show_password" type="checkbox" data-show-password="#password">
+                <span>Показать пароль</span>
+            </label>
 
-        <div class="auth-actions">
             <label for="remember_me" class="remember-control">
                 <input id="remember_me" type="checkbox" name="remember" value="1">
                 <span>Запомнить меня</span>
             </label>
-
-            @if (Route::has('password.request'))
-                <a class="text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request', [], false) }}">
-                    Забыли пароль?
-                </a>
-            @endif
         </div>
 
         <div class="auth-submit-row">
             <button type="submit" class="auth-submit">Войти</button>
         </div>
 
-        <div class="auth-footer">
-            Нет аккаунта?
+        <div class="auth-alt-action">
+            <span>Нет аккаунта?</span>
             <a href="{{ route('register', [], false) }}">Зарегистрироваться</a>
         </div>
     </form>

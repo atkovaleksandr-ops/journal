@@ -31,17 +31,20 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <label for="show_password" class="remember-control">
-            <input id="show_password" type="checkbox" data-show-password="#password, #password_confirmation">
-            <span>Показать пароль</span>
-        </label>
+        <div class="auth-options auth-options-single">
+            <label for="show_password" class="remember-control">
+                <input id="show_password" type="checkbox" data-show-password="#password, #password_confirmation">
+                <span>Показать пароль</span>
+            </label>
+        </div>
 
-        <div class="auth-actions">
-            <a class="text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login', [], false) }}">
-                Уже зарегистрированы?
-            </a>
+        <div class="auth-submit-row">
+            <button type="submit" class="auth-submit">Зарегистрироваться</button>
+        </div>
 
-            <button type="submit">Зарегистрироваться</button>
+        <div class="auth-alt-action">
+            <span>Уже есть аккаунт?</span>
+            <a href="{{ route('login', [], false) }}">Войти</a>
         </div>
     </form>
 
