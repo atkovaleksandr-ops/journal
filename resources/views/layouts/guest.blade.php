@@ -231,8 +231,8 @@
             .auth-help-row {
                 display: flex;
                 justify-content: flex-start;
-                margin-top: -4px !important;
-                padding-bottom: 1px;
+                margin-top: -1px !important;
+                padding-bottom: 0;
             }
 
             .auth-options-single {
