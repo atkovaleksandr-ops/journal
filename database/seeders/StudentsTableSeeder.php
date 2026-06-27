@@ -3,15 +3,11 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Student;
-use App\Models\Group;
 
 class StudentsTableSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        $group = Group::first();
-        Student::create(['group_id'=>$group->id,'first_name'=>'Ivan','last_name'=>'Ivanov','student_number'=>'S001']);
-        Student::create(['group_id'=>$group->id,'first_name'=>'Maria','last_name'=>'Petrova','student_number'=>'S002']);
+        $this->call(DemoSeeder::class);
     }
 }

@@ -24,7 +24,7 @@ class GroupController extends Controller
             'sort' => $request->query('sort', 'course_desc'),
         ];
 
-        if (!in_array($filters['sort'], ['course_desc', 'course_asc', 'name', 'students', 'subjects', 'lessons', 'newest'], true)) {
+        if (!in_array($filters['sort'], ['course_desc', 'course_asc', 'name', 'newest'], true)) {
             $filters['sort'] = 'course_desc';
         }
 
@@ -37,9 +37,6 @@ class GroupController extends Controller
             });
 
         match ($filters['sort']) {
-            'students' => $groupsQuery->orderByDesc('students_count')->orderBy('name'),
-            'subjects' => $groupsQuery->orderByDesc('subjects_count')->orderBy('name'),
-            'lessons' => $groupsQuery->orderByDesc('lessons_count')->orderBy('name'),
             'newest' => $groupsQuery->latest(),
             'course_desc', 'course_asc' => $groupsQuery->orderBy('name'),
             default => $groupsQuery->orderBy('name'),

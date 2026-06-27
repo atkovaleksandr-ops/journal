@@ -194,6 +194,24 @@ class JournalWorkflowTest extends TestCase
             ->assertSeeInOrder(['ПО-41', 'ВТ-22', 'ПО-12']);
     }
 
+    public function test_groups_index_keeps_sorting_options_simple(): void
+    {
+        $teacher = User::factory()->create(['role' => 'teacher']);
+        Group::create([
+            'name' => 'ПО-12',
+            'description' => 'Программное обеспечение, 1 курс, 2 группа',
+        ]);
+
+        $this->actingAs($teacher)
+            ->get(route('groups.index'))
+            ->assertOk()
+            ->assertSee('Старшие курсы сверху')
+            ->assertSee('Младшие курсы сверху')
+            ->assertDontSee('Больше студентов')
+            ->assertDontSee('Больше предметов')
+            ->assertDontSee('Больше уроков');
+    }
+
     public function test_public_landing_install_and_contact_pages_render(): void
     {
         $this->get(route('welcome'))

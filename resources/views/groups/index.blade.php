@@ -15,7 +15,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('groups.index') }}" method="GET" class="filter-panel">
+    <form action="{{ route('groups.index') }}" method="GET" class="filter-panel groups-toolbar">
         <div class="field field-grow">
             <label for="q">Поиск</label>
             <input id="q" type="search" name="q" value="{{ $filters['q'] }}" placeholder="Название или описание">
@@ -27,9 +27,6 @@
                 <option value="course_desc" @selected($filters['sort'] === 'course_desc')>Старшие курсы сверху</option>
                 <option value="course_asc" @selected($filters['sort'] === 'course_asc')>Младшие курсы сверху</option>
                 <option value="name" @selected($filters['sort'] === 'name')>По названию</option>
-                <option value="students" @selected($filters['sort'] === 'students')>Больше студентов</option>
-                <option value="subjects" @selected($filters['sort'] === 'subjects')>Больше предметов</option>
-                <option value="lessons" @selected($filters['sort'] === 'lessons')>Больше уроков</option>
                 <option value="newest" @selected($filters['sort'] === 'newest')>Недавно созданные</option>
             </select>
         </div>

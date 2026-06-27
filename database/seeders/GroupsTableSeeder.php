@@ -3,13 +3,11 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Group;
 
 class GroupsTableSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        Group::create(['name' => 'ВТ-22', 'description' => 'Вычислительные технологии, 2 курс, 2 группа']);
-        Group::create(['name' => 'ПО-31', 'description' => 'Программное обеспечение, 3 курс, 1 группа']);
+        $this->call(DemoSeeder::class);
     }
 }

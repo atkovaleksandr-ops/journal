@@ -584,6 +584,10 @@
             min-width: 118px;
         }
 
+        .groups-toolbar {
+            grid-template-columns: minmax(280px, 1fr) minmax(220px, 0.5fr) auto;
+        }
+
         .subject-lesson-list {
             display: grid;
             gap: 16px;
@@ -747,6 +751,7 @@
             border-radius: 16px;
             background: rgba(30, 41, 59, 0.68);
             border: 1px solid rgba(148, 163, 184, 0.16);
+            min-width: 0;
         }
 
         .lesson-meta,
@@ -802,6 +807,10 @@
             line-height: 1.25;
         }
 
+        .teacher-card p {
+            min-height: 48px;
+        }
+
         .lesson-actions {
             display: grid;
             grid-template-columns: minmax(0, 1fr) auto;
@@ -830,7 +839,7 @@
 
         .teacher-card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(252px, 1fr));
             gap: 14px;
             margin-top: 18px;
         }
@@ -1463,6 +1472,10 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
+            .groups-toolbar {
+                grid-template-columns: minmax(0, 1fr) minmax(190px, 0.55fr);
+            }
+
             .filter-panel .field-grow {
                 grid-column: 1 / -1;
             }
@@ -1475,6 +1488,10 @@
 
             .filter-actions .btn {
                 flex: 1;
+            }
+
+            .teacher-card p {
+                min-height: 0;
             }
         }
 
