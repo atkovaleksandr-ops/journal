@@ -15,7 +15,7 @@
 
         <div class="auth-field">
             <label for="email">Email</label>
-            <input id="email" class="auth-input" type="email" name="email" value="{{ old('email') }}" required autocomplete="username">
+            <input id="email" class="auth-input" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" inputmode="email" spellcheck="false" autocapitalize="none" data-normalize-email>
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 

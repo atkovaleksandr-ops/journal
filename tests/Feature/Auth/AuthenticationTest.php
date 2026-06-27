@@ -30,6 +30,21 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_login_normalizes_cyrillic_email_lookalikes(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'aassa@journal.local',
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => 'аassa@journal.local',
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticatedAs($user);
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
     public function test_users_can_authenticate_with_remember_me(): void
     {
         $user = User::factory()->create([

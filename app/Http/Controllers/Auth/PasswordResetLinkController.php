@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Support\EmailNormalizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
@@ -26,6 +27,10 @@ class PasswordResetLinkController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $request->merge([
+            'email' => EmailNormalizer::normalize($request->input('email')),
+        ]);
+
         $request->validate([
             'email' => ['required', 'email'],
         ]);

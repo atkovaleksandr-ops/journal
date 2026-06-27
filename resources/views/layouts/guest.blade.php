@@ -363,5 +363,56 @@
                 {{ $slot }}
             </div>
         </div>
+
+        <script>
+            (() => {
+                const emailSymbolMap = {
+                    А: 'a',
+                    а: 'a',
+                    В: 'b',
+                    Е: 'e',
+                    е: 'e',
+                    К: 'k',
+                    к: 'k',
+                    М: 'm',
+                    Н: 'h',
+                    О: 'o',
+                    о: 'o',
+                    Р: 'p',
+                    р: 'p',
+                    С: 'c',
+                    с: 'c',
+                    Т: 't',
+                    Х: 'x',
+                    х: 'x',
+                    У: 'y',
+                    у: 'y',
+                };
+
+                const normalizeEmail = (value) => value
+                    .replace(/[АаВЕеКкМНОоРрСсТХхУу]/g, (symbol) => emailSymbolMap[symbol] ?? symbol)
+                    .replace(/\s+/g, '')
+                    .toLowerCase();
+
+                document.querySelectorAll('input[type="email"]').forEach((input) => {
+                    const syncValue = () => {
+                        const nextValue = normalizeEmail(input.value);
+
+                        if (nextValue !== input.value) {
+                            const cursor = input.selectionStart ?? nextValue.length;
+                            input.value = nextValue;
+                            input.setSelectionRange(Math.min(cursor, nextValue.length), Math.min(cursor, nextValue.length));
+                        }
+                    };
+
+                    input.setAttribute('inputmode', 'email');
+                    input.setAttribute('spellcheck', 'false');
+                    input.setAttribute('autocapitalize', 'none');
+                    input.addEventListener('input', syncValue);
+                    input.addEventListener('blur', syncValue);
+                    syncValue();
+                });
+            })();
+        </script>
     </body>
 </html>

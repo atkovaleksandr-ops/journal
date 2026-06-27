@@ -37,6 +37,23 @@ class RegistrationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_registration_normalizes_cyrillic_email_lookalikes(): void
+    {
+        $response = $this->post('/register', [
+            'name' => 'Test User',
+            'email' => 'аassa@journal.local',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', [
+            'email' => 'aassa@journal.local',
+            'role' => 'student',
+        ]);
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
     public function test_registration_ignores_teacher_role_from_request(): void
     {
         $this->post('/register', [
