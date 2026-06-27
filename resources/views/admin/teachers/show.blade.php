@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container admin-teacher-page">
     <div class="page-header">
         <div>
             <h1 class="page-title">{{ $teacher->name }}</h1>
@@ -33,16 +33,20 @@
         </div>
     </div>
 
-    <section class="panel" style="margin-bottom: 18px;">
-        <h2>Данные для входа</h2>
-        <p class="page-subtitle">Пароль хранится в зашифрованном виде и доступен только администратору.</p>
+    <section class="panel admin-card">
+        <div class="section-head">
+            <div>
+                <h2>Данные для входа</h2>
+                <p class="page-subtitle">Пароль хранится в зашифрованном виде и доступен только администратору.</p>
+            </div>
+        </div>
 
         <div class="credential-grid">
-            <div class="credential-row">
+            <div class="credential-row admin-credential-row">
                 <span>Email</span>
                 <strong>{{ $teacher->email }}</strong>
             </div>
-            <div class="credential-row">
+            <div class="credential-row admin-credential-row">
                 <span>Выданный пароль</span>
                 @if($teacher->login_password)
                     <div class="password-line">
@@ -59,68 +63,58 @@
         </div>
     </section>
 
-    <div class="dashboard-grid">
-        <section class="panel">
-            <h2>Предметы преподавателя</h2>
-            <p class="page-subtitle">Быстрый обзор нагрузки по группам.</p>
+    <div class="admin-teacher-grid">
+        <section class="panel admin-list-panel">
+            <div class="section-head">
+                <div>
+                    <h2>Предметы преподавателя</h2>
+                    <p class="page-subtitle">Быстрый обзор нагрузки по группам.</p>
+                </div>
+            </div>
 
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Предмет</th>
-                            <th>Группа</th>
-                            <th>Уроки</th>
-                            <th>Совместное ведение</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($subjects as $subject)
-                            <tr>
-                                <td><strong>{{ $subject->name }}</strong></td>
-                                <td>{{ $subject->group->name ?? 'Без группы' }}</td>
-                                <td>{{ $subject->lessons_count }}</td>
-                                <td>
-                                    @if($subject->coTeachers->isNotEmpty())
-                                        {{ $subject->coTeachers->pluck('name')->join(', ') }}
-                                    @else
-                                        <span class="muted">Только этот преподаватель</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="4">У преподавателя пока нет предметов.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <div class="admin-subject-list">
+                @forelse($subjects as $subject)
+                    <article class="admin-subject-item">
+                        <div class="admin-subject-main">
+                            <strong>{{ $subject->name }}</strong>
+                            @if($subject->coTeachers->isNotEmpty())
+                                <span>{{ $subject->coTeachers->pluck('name')->join(', ') }}</span>
+                            @else
+                                <span>Только этот преподаватель</span>
+                            @endif
+                        </div>
+
+                        <div class="admin-subject-meta">
+                            <span class="badge">{{ $subject->group->name ?? 'Без группы' }}</span>
+                            <span class="admin-count-pill">{{ $subject->lessons_count }} уроков</span>
+                        </div>
+                    </article>
+                @empty
+                    <div class="empty-state">У преподавателя пока нет предметов.</div>
+                @endforelse
             </div>
         </section>
 
-        <section class="panel">
-            <h2>Последние уроки</h2>
-            <p class="page-subtitle">Помогает быстро понять, ведется ли журнал.</p>
+        <section class="panel admin-list-panel">
+            <div class="section-head">
+                <div>
+                    <h2>Последние уроки</h2>
+                    <p class="page-subtitle">Помогает быстро понять, ведется ли журнал.</p>
+                </div>
+            </div>
 
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Дата</th>
-                            <th>Предмет</th>
-                            <th>Группа</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($recentLessons as $lesson)
-                            <tr>
-                                <td>{{ \Illuminate\Support\Carbon::parse($lesson->date)->format('d.m.Y') }}</td>
-                                <td><strong>{{ $lesson->subject->name ?? 'Предмет удален' }}</strong></td>
-                                <td>{{ $lesson->group->name ?? 'Группа удалена' }}</td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="3">Уроки пока не созданы.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <div class="admin-lesson-list">
+                @forelse($recentLessons as $lesson)
+                    <article class="admin-lesson-item">
+                        <time datetime="{{ $lesson->date }}">{{ \Illuminate\Support\Carbon::parse($lesson->date)->format('d.m.Y') }}</time>
+                        <div>
+                            <strong>{{ $lesson->subject->name ?? 'Предмет удален' }}</strong>
+                            <span>{{ $lesson->group->name ?? 'Группа удалена' }}</span>
+                        </div>
+                    </article>
+                @empty
+                    <div class="empty-state">Уроки пока не созданы.</div>
+                @endforelse
             </div>
         </section>
     </div>

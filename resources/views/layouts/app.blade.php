@@ -224,6 +224,28 @@
             padding: 20px;
         }
 
+        .form-card {
+            margin-top: 18px;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(30, 41, 59, 0.58);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+        }
+
+        .section-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .section-head h2 {
+            margin: 0 0 6px;
+            color: #ffffff;
+            font-size: 18px;
+            line-height: 1.25;
+        }
+
         .stat-grid,
         .dashboard-grid,
         .form-grid {
@@ -458,6 +480,148 @@
         .mini-stat-row strong {
             color: #ffffff;
             overflow-wrap: anywhere;
+        }
+
+        .admin-card {
+            margin-bottom: 18px;
+        }
+
+        .admin-teacher-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+            gap: 16px;
+            align-items: start;
+            margin-top: 22px;
+        }
+
+        .admin-list-panel {
+            padding: 18px;
+        }
+
+        .admin-list-panel .section-head,
+        .admin-form-card .section-head {
+            margin-bottom: 16px;
+        }
+
+        .admin-subject-list,
+        .admin-lesson-list,
+        .admin-form-stack {
+            display: grid;
+            gap: 12px;
+        }
+
+        .admin-subject-item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 14px;
+            align-items: center;
+            padding: 14px;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.42);
+            border: 1px solid rgba(148, 163, 184, 0.13);
+        }
+
+        .admin-subject-main {
+            display: grid;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .admin-subject-main strong,
+        .admin-lesson-item strong {
+            color: #ffffff;
+            line-height: 1.35;
+        }
+
+        .admin-subject-main span,
+        .admin-lesson-item span,
+        .admin-current-password p {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .admin-subject-meta {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .admin-subject-meta .badge {
+            white-space: nowrap;
+        }
+
+        .admin-count-pill {
+            min-height: 30px;
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            color: #dbeafe;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(96, 165, 250, 0.18);
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .admin-lesson-item {
+            display: grid;
+            grid-template-columns: 94px minmax(0, 1fr);
+            gap: 12px;
+            align-items: center;
+            padding: 13px 14px;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+        }
+
+        .admin-lesson-item time {
+            color: #bae6fd;
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .admin-lesson-item div {
+            display: grid;
+            gap: 3px;
+            min-width: 0;
+        }
+
+        .admin-form-card {
+            display: grid;
+            gap: 0;
+            margin-top: 18px;
+        }
+
+        .admin-two-column {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin: 0;
+        }
+
+        .admin-current-password {
+            display: grid;
+            grid-template-columns: minmax(180px, 0.5fr) minmax(0, 1fr);
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 14px;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.42);
+            border: 1px solid rgba(148, 163, 184, 0.13);
+        }
+
+        .admin-current-password span {
+            color: #e2e8f0;
+            font-weight: 800;
+        }
+
+        .admin-current-password .password-line {
+            min-width: 0;
         }
 
         .mini-stat-row {
@@ -1493,6 +1657,20 @@
             .teacher-card p {
                 min-height: 0;
             }
+
+            .admin-teacher-grid,
+            .admin-current-password {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-subject-item {
+                grid-template-columns: 1fr;
+                align-items: start;
+            }
+
+            .admin-subject-meta {
+                justify-content: flex-start;
+            }
         }
 
         @media (max-width: 640px) {
@@ -1685,6 +1863,7 @@
             .stat-grid,
             .dashboard-grid,
             .form-grid,
+            .admin-two-column,
             .group-builder,
             .filter-panel,
             .lesson-form-grid,
@@ -1725,6 +1904,15 @@
 
             .filter-panel {
                 padding: 14px;
+            }
+
+            .admin-lesson-item {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-list-panel,
+            .form-card {
+                padding: 16px;
             }
 
             .filter-actions,

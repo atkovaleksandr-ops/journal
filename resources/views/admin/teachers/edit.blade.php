@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container narrow">
+<div class="container narrow admin-teacher-edit">
     <div class="page-header">
         <div>
             <h1 class="page-title">Изменить учителя</h1>
@@ -15,39 +15,53 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <section class="form-card">
-        <h2>Данные преподавателя</h2>
+    <section class="form-card admin-form-card">
+        <div class="section-head">
+            <div>
+                <h2>Данные преподавателя</h2>
+                <p class="page-subtitle">Имя и email используются для входа преподавателя в систему.</p>
+            </div>
+        </div>
 
-        <form action="{{ route('admin.teachers.update', $teacher) }}" method="POST" class="form-grid">
+        <form action="{{ route('admin.teachers.update', $teacher) }}" method="POST" class="admin-form-stack">
             @csrf
             @method('PATCH')
 
-            <div class="field">
-                <label for="name">Имя</label>
-                <input id="name" type="text" name="name" value="{{ old('name', $teacher->name) }}" required autocomplete="name">
-                @error('name') <div class="error-message">{{ $message }}</div> @enderror
+            <div class="form-grid admin-two-column">
+                <div class="field">
+                    <label for="name">Имя</label>
+                    <input id="name" type="text" name="name" value="{{ old('name', $teacher->name) }}" required autocomplete="name">
+                    @error('name') <div class="error-message">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input id="email" type="email" name="email" value="{{ old('email', $teacher->email) }}" required autocomplete="email">
+                    @error('email') <div class="error-message">{{ $message }}</div> @enderror
+                </div>
             </div>
 
-            <div class="field">
-                <label for="email">Email</label>
-                <input id="email" type="email" name="email" value="{{ old('email', $teacher->email) }}" required autocomplete="email">
-                @error('email') <div class="error-message">{{ $message }}</div> @enderror
-            </div>
-
-            <div class="form-actions">
+            <div class="form-actions form-actions-start">
                 <button type="submit" class="btn btn-primary">Сохранить</button>
                 <a href="{{ route('admin.teachers.index', [], false) }}" class="btn btn-secondary">К списку</a>
             </div>
         </form>
     </section>
 
-    <section class="form-card">
-        <h2>Сброс пароля</h2>
-        <p class="page-subtitle">Новый пароль сразу заменит старый. Передайте его преподавателю лично.</p>
+    <section class="form-card admin-form-card">
+        <div class="section-head">
+            <div>
+                <h2>Сброс пароля</h2>
+                <p class="page-subtitle">Новый пароль сразу заменит старый. Передайте его преподавателю лично.</p>
+            </div>
+        </div>
 
         @if($teacher->login_password)
-            <div class="credential-row" style="margin-bottom: 16px;">
-                <span>Текущий выданный пароль</span>
+            <div class="admin-current-password">
+                <div>
+                    <span>Текущий выданный пароль</span>
+                    <p>Можно показать перед заменой, если нужно сверить доступ.</p>
+                </div>
                 <div class="password-line">
                     <input id="current_teacher_password" type="password" value="{{ $teacher->login_password }}" readonly>
                     <button type="button" class="btn btn-secondary btn-compact" data-toggle-password="#current_teacher_password">Показать</button>
@@ -59,11 +73,11 @@
             </div>
         @endif
 
-        <form action="{{ route('admin.teachers.password', $teacher) }}" method="POST">
+        <form action="{{ route('admin.teachers.password', $teacher) }}" method="POST" class="admin-form-stack">
             @csrf
             @method('PATCH')
 
-            <div class="form-grid">
+            <div class="form-grid admin-two-column">
                 <div class="field">
                     <label for="password">Новый пароль</label>
                     <input id="password" type="password" name="password" required autocomplete="new-password">
