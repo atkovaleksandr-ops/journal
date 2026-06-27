@@ -210,18 +210,8 @@
                 margin-bottom: 0 !important;
             }
 
-            .auth-label-row {
-                display: flex;
-                align-items: baseline;
-                justify-content: space-between;
-                gap: 12px;
-                min-width: 0;
-            }
-
             .auth-help-link {
-                flex: 0 0 auto;
                 font-size: 13px;
-                text-align: right;
                 text-decoration: none;
                 white-space: nowrap;
             }
@@ -236,6 +226,13 @@
                 gap: 8px;
                 margin-top: -1px;
                 padding: 2px 0 0;
+            }
+
+            .auth-help-row {
+                display: flex;
+                justify-content: center;
+                margin-top: -4px !important;
+                padding-bottom: 1px;
             }
 
             .auth-options-single {
@@ -341,10 +338,6 @@
                 .auth-actions {
                     align-items: flex-start;
                     flex-direction: column;
-                    gap: 10px;
-                }
-
-                .auth-label-row {
                     gap: 10px;
                 }
             }

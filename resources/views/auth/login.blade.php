@@ -16,15 +16,7 @@
         </div>
 
         <div class="auth-field">
-            <div class="auth-label-row">
-                <label for="password">Пароль</label>
-
-                @if (Route::has('password.request'))
-                    <a class="auth-help-link" href="{{ route('password.request', [], false) }}">
-                        Забыли пароль?
-                    </a>
-                @endif
-            </div>
+            <label for="password">Пароль</label>
             <input id="password" class="auth-input" type="password" name="password" required autocomplete="current-password">
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
@@ -44,6 +36,14 @@
         <div class="auth-submit-row">
             <button type="submit" class="auth-submit">Войти</button>
         </div>
+
+        @if (Route::has('password.request'))
+            <div class="auth-help-row">
+                <a class="auth-help-link" href="{{ route('password.request', [], false) }}">
+                    Забыли пароль?
+                </a>
+            </div>
+        @endif
 
         <div class="auth-alt-action">
             <span>Нет аккаунта?</span>
