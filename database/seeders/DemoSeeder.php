@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Hash;
 
 class DemoSeeder extends Seeder
 {
+    private const STUDENTS_PER_GROUP = 8;
+    private const LESSONS_PER_SUBJECT = 8;
+
     public function run(): void
     {
         $adminPassword = env('DEMO_ADMIN_PASSWORD', 'admin12345');
@@ -53,7 +56,31 @@ class DemoSeeder extends Seeder
 
     private function seedStudents(Group $group, array $groupData, string $studentPassword)
     {
-        return collect($groupData['students'])->map(function (array $name, int $index) use ($group, $groupData, $studentPassword) {
+        $students = collect($groupData['students'])
+            ->take(self::STUDENTS_PER_GROUP)
+            ->values();
+
+        $studentNumbers = $students
+            ->keys()
+            ->map(fn (int $index) => strtoupper($groupData['email_prefix']) . '-' . str_pad((string) ($index + 1), 3, '0', STR_PAD_LEFT));
+
+        $studentsToRemove = Student::where('group_id', $group->id)
+            ->whereNotIn('student_number', $studentNumbers)
+            ->get();
+
+        if ($studentsToRemove->isNotEmpty()) {
+            $studentIds = $studentsToRemove->pluck('id');
+            $userIds = $studentsToRemove->pluck('user_id')->filter();
+
+            Attendance::whereIn('student_id', $studentIds)->delete();
+            Student::whereIn('id', $studentIds)->delete();
+            User::whereIn('id', $userIds)
+                ->where('role', 'student')
+                ->whereDoesntHave('student')
+                ->delete();
+        }
+
+        return $students->map(function (array $name, int $index) use ($group, $groupData, $studentPassword) {
             $studentNumber = strtoupper($groupData['email_prefix']) . '-' . str_pad((string) ($index + 1), 3, '0', STR_PAD_LEFT);
             $email = $groupData['email_prefix'] . '-' . str_pad((string) ($index + 1), 3, '0', STR_PAD_LEFT) . '@journal.local';
             $fullName = $name['last_name'] . ' ' . $name['first_name'];
@@ -99,6 +126,7 @@ class DemoSeeder extends Seeder
         }
 
         foreach ($groupData['subjects'] as $subjectIndex => $subjectData) {
+            $studentIds = $students->pluck('id');
             $subject = Subject::updateOrCreate(
                 [
                     'name' => $subjectData['name'],
@@ -108,7 +136,9 @@ class DemoSeeder extends Seeder
                 ['description' => $subjectData['description']],
             );
 
-            foreach ($subjectData['topics'] as $lessonIndex => $topic) {
+            $lessonIds = [];
+
+            foreach (array_slice($subjectData['topics'], 0, self::LESSONS_PER_SUBJECT) as $lessonIndex => $topic) {
                 $lesson = Lesson::updateOrCreate(
                     [
                         'subject_id' => $subject->id,
@@ -119,6 +149,12 @@ class DemoSeeder extends Seeder
                     ],
                     ['description' => 'Практическое занятие по теме "' . $topic . '".'],
                 );
+
+                $lessonIds[] = $lesson->id;
+
+                Attendance::where('lesson_id', $lesson->id)
+                    ->whereNotIn('student_id', $studentIds)
+                    ->delete();
 
                 foreach ($students->values() as $studentIndex => $student) {
                     $isAbsent = ($studentIndex + $lessonIndex + $subjectIndex) % 7 === 0;
@@ -138,6 +174,10 @@ class DemoSeeder extends Seeder
                     );
                 }
             }
+
+            Lesson::where('subject_id', $subject->id)
+                ->whereNotIn('id', $lessonIds)
+                ->delete();
         }
     }
 
@@ -148,7 +188,7 @@ class DemoSeeder extends Seeder
                 'name' => 'ВТ-23',
                 'description' => 'Вычислительные технологии, 2 курс, 3 группа',
                 'email_prefix' => 'vt23',
-                'students' => $this->names(0, 10),
+                'students' => $this->names(0, self::STUDENTS_PER_GROUP),
                 'subjects' => [
                     $this->subject('Архитектура компьютера', 'Устройство ПК, память, процессоры и периферия.', [
                         'Компоненты системного блока',
@@ -186,7 +226,7 @@ class DemoSeeder extends Seeder
                 'name' => 'ДИ-21',
                 'description' => 'Дизайн интерфейсов, 2 курс, 1 группа',
                 'email_prefix' => 'di21',
-                'students' => $this->names(10, 9),
+                'students' => $this->names(8, self::STUDENTS_PER_GROUP),
                 'subjects' => [
                     $this->subject('UX-проектирование', 'Исследование пользователей и сценарии взаимодействия.', [
                         'Портрет пользователя',
@@ -224,7 +264,7 @@ class DemoSeeder extends Seeder
                 'name' => 'ИС-21',
                 'description' => 'Информационные системы, 2 курс, 1 группа',
                 'email_prefix' => 'is21',
-                'students' => $this->names(19, 12),
+                'students' => $this->names(16, self::STUDENTS_PER_GROUP),
                 'subjects' => [
                     $this->subject('Информационные системы', 'Проектирование, роли пользователей и бизнес-процессы.', [
                         'Назначение информационных систем',
@@ -262,7 +302,7 @@ class DemoSeeder extends Seeder
                 'name' => 'ПО-12',
                 'description' => 'Программное обеспечение, 1 курс, 2 группа',
                 'email_prefix' => 'po12',
-                'students' => $this->names(31, 8),
+                'students' => $this->names(24, self::STUDENTS_PER_GROUP),
                 'subjects' => [
                     $this->subject('Алгоритмизация', 'Блок-схемы, условия, циклы и базовые алгоритмы.', [
                         'Понятие алгоритма',
@@ -300,7 +340,7 @@ class DemoSeeder extends Seeder
                 'name' => 'ПО-22',
                 'description' => 'Программное обеспечение, 2 курс, 2 группа',
                 'email_prefix' => 'po22',
-                'students' => $this->names(39, 10),
+                'students' => $this->names(32, self::STUDENTS_PER_GROUP),
                 'subjects' => [
                     $this->subject('Программирование', 'ООП, коллекции, обработка ошибок и практика кода.', [
                         'Классы и объекты',
@@ -338,7 +378,7 @@ class DemoSeeder extends Seeder
                 'name' => 'КС-31',
                 'description' => 'Компьютерные сети, 3 курс, 1 группа',
                 'email_prefix' => 'ks31',
-                'students' => $this->names(49, 9),
+                'students' => $this->names(40, self::STUDENTS_PER_GROUP),
                 'subjects' => [
                     $this->subject('Сетевое администрирование', 'Настройка сетевой инфраструктуры и рабочих служб.', [
                         'План адресации',

@@ -222,11 +222,28 @@ class JournalWorkflowTest extends TestCase
         $this->assertNotNull($teacher);
         $this->assertSame(1, User::where('role', 'teacher')->count());
         $this->assertSame(6, Group::count());
+        $this->assertSame(48, Student::count());
         $this->assertSame(18, Subject::where('teacher_id', $teacher->id)->count());
+        $this->assertSame(144, Lesson::count());
+        $this->assertSame(1152, Attendance::count());
 
-        Group::withCount('subjects')->get()->each(function (Group $group): void {
+        Group::withCount(['students', 'subjects'])->get()->each(function (Group $group): void {
+            $this->assertSame(8, $group->students_count, $group->name);
             $this->assertSame(3, $group->subjects_count, $group->name);
         });
+
+        Subject::withCount('lessons')->get()->each(function (Subject $subject): void {
+            $this->assertSame(8, $subject->lessons_count, $subject->name);
+        });
+
+        $missingAttendances = Lesson::all()->sum(function (Lesson $lesson): int {
+            $studentsCount = Student::where('group_id', $lesson->group_id)->count();
+            $markedCount = Attendance::where('lesson_id', $lesson->id)->count();
+
+            return max($studentsCount - $markedCount, 0);
+        });
+
+        $this->assertSame(0, $missingAttendances);
     }
 
     public function test_public_landing_install_and_contact_pages_render(): void
