@@ -230,7 +230,7 @@
 
             .auth-help-row {
                 display: flex;
-                justify-content: center;
+                justify-content: flex-start;
                 margin-top: -4px !important;
                 padding-bottom: 1px;
             }
