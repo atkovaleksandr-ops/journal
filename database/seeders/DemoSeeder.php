@@ -85,6 +85,18 @@ class DemoSeeder extends Seeder
     private function seedSubjects(Group $group, User $teacher, $students, array $groupData, int $groupIndex): void
     {
         $baseDate = Carbon::today()->subWeeks(10)->addDays($groupIndex * 3);
+        $subjectNames = collect($groupData['subjects'])->pluck('name');
+
+        $subjectsToRemove = Subject::where('group_id', $group->id)
+            ->where('teacher_id', $teacher->id)
+            ->whereNotIn('name', $subjectNames)
+            ->pluck('id');
+
+        if ($subjectsToRemove->isNotEmpty()) {
+            Attendance::whereIn('subject_id', $subjectsToRemove)->delete();
+            Lesson::whereIn('subject_id', $subjectsToRemove)->delete();
+            Subject::whereIn('id', $subjectsToRemove)->delete();
+        }
 
         foreach ($groupData['subjects'] as $subjectIndex => $subjectData) {
             $subject = Subject::updateOrCreate(
@@ -168,16 +180,6 @@ class DemoSeeder extends Seeder
                         'Поиск ошибки в цепи',
                         'Защита лабораторной работы',
                     ]),
-                    $this->subject('Компьютерные сети', 'Локальные сети, адресация и базовая диагностика.', [
-                        'Модель OSI',
-                        'IP-адресация',
-                        'Маршрутизация',
-                        'DNS и DHCP',
-                        'Коммутаторы',
-                        'Беспроводные сети',
-                        'Диагностика ping и tracert',
-                        'Схема сети кабинета',
-                    ]),
                 ],
             ],
             [
@@ -253,16 +255,6 @@ class DemoSeeder extends Seeder
                         'Шаблоны Blade',
                         'Работа с данными',
                         'Публикация проекта',
-                    ]),
-                    $this->subject('Анализ данных', 'Сбор, очистка, сводные таблицы и простые графики.', [
-                        'Типы данных',
-                        'Очистка таблицы',
-                        'Формулы',
-                        'Сводная таблица',
-                        'Диаграммы',
-                        'Поиск аномалий',
-                        'Интерпретация результата',
-                        'Отчет по набору данных',
                     ]),
                 ],
             ],
@@ -342,6 +334,44 @@ class DemoSeeder extends Seeder
                     ]),
                 ],
             ],
+            [
+                'name' => 'КС-31',
+                'description' => 'Компьютерные сети, 3 курс, 1 группа',
+                'email_prefix' => 'ks31',
+                'students' => $this->names(49, 9),
+                'subjects' => [
+                    $this->subject('Сетевое администрирование', 'Настройка сетевой инфраструктуры и рабочих служб.', [
+                        'План адресации',
+                        'Настройка маршрутизатора',
+                        'VLAN и сегментация',
+                        'Служба DHCP',
+                        'Служба DNS',
+                        'Мониторинг сети',
+                        'Резервирование конфигураций',
+                        'Итоговая настройка стенда',
+                    ]),
+                    $this->subject('Кибербезопасность', 'Базовая защита учетных записей, сетей и рабочих станций.', [
+                        'Модели угроз',
+                        'Парольная политика',
+                        'Многофакторная защита',
+                        'Файрвол',
+                        'Журнал событий',
+                        'Фишинговые письма',
+                        'Резервные копии',
+                        'План реагирования',
+                    ]),
+                    $this->subject('Серверные системы', 'Развертывание серверов, служб и учетных записей.', [
+                        'Роли сервера',
+                        'Пользователи и группы',
+                        'Файловый сервер',
+                        'Web-сервер',
+                        'Службы каталогов',
+                        'План обслуживания',
+                        'Мониторинг ресурсов',
+                        'Защита серверной работы',
+                    ]),
+                ],
+            ],
         ];
     }
 
@@ -402,6 +432,15 @@ class DemoSeeder extends Seeder
             ['first_name' => 'Максим', 'last_name' => 'Лазарев'],
             ['first_name' => 'Индира', 'last_name' => 'Сулейменова'],
             ['first_name' => 'Антон', 'last_name' => 'Гаврилов'],
+            ['first_name' => 'Алмас', 'last_name' => 'Нурпеисов'],
+            ['first_name' => 'Валерия', 'last_name' => 'Савина'],
+            ['first_name' => 'Нурсултан', 'last_name' => 'Жумабеков'],
+            ['first_name' => 'Оксана', 'last_name' => 'Крылова'],
+            ['first_name' => 'Адиль', 'last_name' => 'Касымов'],
+            ['first_name' => 'Тамара', 'last_name' => 'Воронова'],
+            ['first_name' => 'Самат', 'last_name' => 'Оспанов'],
+            ['first_name' => 'Дарья', 'last_name' => 'Чернова'],
+            ['first_name' => 'Ержан', 'last_name' => 'Мамбеталиев'],
         ], $offset, $count);
     }
 }

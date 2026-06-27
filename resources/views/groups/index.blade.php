@@ -51,6 +51,20 @@
                             2, 3, 4 => 'студента',
                             default => 'студентов',
                         };
+                    $pluralWord = function (int $count, array $forms): string {
+                        $mod100 = $count % 100;
+                        $mod10 = $count % 10;
+
+                        return $mod100 >= 11 && $mod100 <= 14
+                            ? $forms[2]
+                            : match ($mod10) {
+                                1 => $forms[0],
+                                2, 3, 4 => $forms[1],
+                                default => $forms[2],
+                            };
+                    };
+                    $subjectsWord = $pluralWord((int) $group->subjects_count, ['предмет', 'предмета', 'предметов']);
+                    $lessonsWord = $pluralWord((int) $group->lessons_count, ['урок', 'урока', 'уроков']);
                 @endphp
                 <article class="teacher-card">
                     <div class="teacher-card-top">
@@ -58,7 +72,7 @@
                             <strong>{{ $studentsCount }}</strong>
                             <span>{{ $studentsWord }}</span>
                         </span>
-                        <span class="muted">{{ $group->subjects_count }} предметов · {{ $group->lessons_count }} уроков</span>
+                        <span class="muted">{{ $group->subjects_count }} {{ $subjectsWord }} · {{ $group->lessons_count }} {{ $lessonsWord }}</span>
                     </div>
 
                     <h2>{{ $group->name }}</h2>

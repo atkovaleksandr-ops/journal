@@ -8,6 +8,7 @@ use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\User;
+use Database\Seeders\DemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -210,6 +211,22 @@ class JournalWorkflowTest extends TestCase
             ->assertDontSee('Больше студентов')
             ->assertDontSee('Больше предметов')
             ->assertDontSee('Больше уроков');
+    }
+
+    public function test_demo_seed_creates_six_groups_with_three_subjects_for_one_teacher(): void
+    {
+        $this->seed(DemoSeeder::class);
+
+        $teacher = User::where('email', 'teacher@journal.local')->first();
+
+        $this->assertNotNull($teacher);
+        $this->assertSame(1, User::where('role', 'teacher')->count());
+        $this->assertSame(6, Group::count());
+        $this->assertSame(18, Subject::where('teacher_id', $teacher->id)->count());
+
+        Group::withCount('subjects')->get()->each(function (Group $group): void {
+            $this->assertSame(3, $group->subjects_count, $group->name);
+        });
     }
 
     public function test_public_landing_install_and_contact_pages_render(): void
