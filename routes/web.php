@@ -15,6 +15,10 @@ use App\Models\User;
 use App\Services\AttendanceSummaryService;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/health', function () {
+    return response('ok', 200);
+})->name('health');
+
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
