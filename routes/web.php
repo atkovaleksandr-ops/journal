@@ -173,14 +173,8 @@ Route::get('/download/windows/installer', function () {
 Route::get('/download/version', function (Illuminate\Http\Request $request) {
     $windowsPath = public_path('downloads/Journal-Windows-Setup.exe');
     $androidPath = public_path('downloads/Journal-Android.apk');
-    $packagePath = base_path('apps/windows-electron/package.json');
-    $version = '1.0.0';
+    $version = env('JOURNAL_APP_VERSION', '1.1.3');
     $baseUrl = $request->getSchemeAndHttpHost();
-
-    if (file_exists($packagePath)) {
-        $package = json_decode((string) file_get_contents($packagePath), true);
-        $version = $package['version'] ?? $version;
-    }
 
     return response()->json([
         'name' => 'Journal',

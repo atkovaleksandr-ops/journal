@@ -98,7 +98,7 @@
   <main class="card">
     <p class="brand">Journal.</p>
     <h1>Подключение к сайту</h1>
-    <p>Укажите адрес сайта Journal, доступный с телефона. Для локальной сети это обычно адрес компьютера с Laragon.</p>
+    <p>Адрес сайта уже указан. Нажмите кнопку ниже, чтобы открыть Journal в отдельной мобильной оболочке.</p>
 
     <label for="journalUrl">Адрес сайта</label>
     <input id="journalUrl" type="url" inputmode="url" autocomplete="url" placeholder="https://journal.example.com">
@@ -112,7 +112,7 @@
   </main>
 
   <script>
-    const defaultUrl = 'http://journal.test';
+    const defaultUrl = 'https://journal-production-858f.up.railway.app';
     const storageKey = 'journal_site_url';
     const input = document.querySelector('#journalUrl');
     const openButton = document.querySelector('#openJournal');

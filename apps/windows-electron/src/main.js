@@ -2,7 +2,7 @@ const { app, BrowserWindow, shell, Menu } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
-const DEFAULT_JOURNAL_URL = 'http://journal.test';
+const DEFAULT_JOURNAL_URL = 'https://journal-production-858f.up.railway.app';
 
 function resolveJournalUrl() {
   if (process.env.JOURNAL_APP_URL) {
