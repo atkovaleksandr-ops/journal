@@ -15,28 +15,6 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('groups.index') }}" method="GET" class="filter-panel groups-toolbar">
-        <div class="field field-grow">
-            <label for="q">Поиск</label>
-            <input id="q" type="search" name="q" value="{{ $filters['q'] }}" placeholder="Название или описание">
-        </div>
-
-        <div class="field">
-            <label for="sort">Сортировка</label>
-            <select id="sort" name="sort">
-                <option value="course_desc" @selected($filters['sort'] === 'course_desc')>Старшие курсы сверху</option>
-                <option value="course_asc" @selected($filters['sort'] === 'course_asc')>Младшие курсы сверху</option>
-                <option value="name" @selected($filters['sort'] === 'name')>По названию</option>
-                <option value="newest" @selected($filters['sort'] === 'newest')>Недавно созданные</option>
-            </select>
-        </div>
-
-        <div class="filter-actions">
-            <button type="submit" class="btn btn-primary">Показать</button>
-            <a href="{{ route('groups.index') }}" class="btn btn-secondary">Сбросить</a>
-        </div>
-    </form>
-
     @if($groups->count() > 0)
         <div class="teacher-card-grid">
             @foreach($groups as $group)

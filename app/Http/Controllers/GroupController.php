@@ -17,44 +17,15 @@ class GroupController extends Controller
     /**
      * Список групп
      */
-    public function index(Request $request)
+    public function index()
     {
-        $filters = [
-            'q' => trim((string) $request->query('q', '')),
-            'sort' => $request->query('sort', 'course_desc'),
-        ];
+        $groups = Group::withCount(['students', 'subjects', 'lessons'])
+            ->orderBy('name')
+            ->get()
+            ->sort(fn (Group $first, Group $second) => $this->compareGroupsByCourse($first, $second, true))
+            ->values();
 
-        if (!in_array($filters['sort'], ['course_desc', 'course_asc', 'name', 'newest'], true)) {
-            $filters['sort'] = 'course_desc';
-        }
-
-        $groupsQuery = Group::withCount(['students', 'subjects', 'lessons'])
-            ->when($filters['q'] !== '', function ($query) use ($filters) {
-                $query->where(function ($searchQuery) use ($filters) {
-                    $searchQuery->where('name', 'like', "%{$filters['q']}%")
-                        ->orWhere('description', 'like', "%{$filters['q']}%");
-                });
-            });
-
-        match ($filters['sort']) {
-            'newest' => $groupsQuery->latest(),
-            'course_desc', 'course_asc' => $groupsQuery->orderBy('name'),
-            default => $groupsQuery->orderBy('name'),
-        };
-
-        $groups = $groupsQuery->get();
-
-        if (in_array($filters['sort'], ['course_desc', 'course_asc'], true)) {
-            $groups = $groups
-                ->sort(fn (Group $first, Group $second) => $this->compareGroupsByCourse(
-                    $first,
-                    $second,
-                    $filters['sort'] === 'course_desc'
-                ))
-                ->values();
-        }
-
-        return view('groups.index', compact('groups', 'filters'));
+        return view('groups.index', compact('groups'));
     }
 
     /**

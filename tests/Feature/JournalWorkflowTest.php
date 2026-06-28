@@ -195,7 +195,7 @@ class JournalWorkflowTest extends TestCase
             ->assertSeeInOrder(['ПО-41', 'ВТ-22', 'ПО-12']);
     }
 
-    public function test_groups_index_keeps_sorting_options_simple(): void
+    public function test_groups_index_does_not_show_extra_filters(): void
     {
         $teacher = User::factory()->create(['role' => 'teacher']);
         Group::create([
@@ -206,8 +206,10 @@ class JournalWorkflowTest extends TestCase
         $this->actingAs($teacher)
             ->get(route('groups.index'))
             ->assertOk()
-            ->assertSee('Старшие курсы сверху')
-            ->assertSee('Младшие курсы сверху')
+            ->assertDontSee('Поиск')
+            ->assertDontSee('Сортировка')
+            ->assertDontSee('Старшие курсы сверху')
+            ->assertDontSee('Младшие курсы сверху')
             ->assertDontSee('Больше студентов')
             ->assertDontSee('Больше предметов')
             ->assertDontSee('Больше уроков');
