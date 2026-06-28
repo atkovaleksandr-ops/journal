@@ -4,6 +4,7 @@ set -eu
 cd /app
 
 DB_PATH="${DB_DATABASE:-/app/database/database.sqlite}"
+SHOULD_SEED_DEMO="false"
 
 if [ "$(id -u)" = "0" ]; then
     mkdir -p "$(dirname "$DB_PATH")"
@@ -13,13 +14,18 @@ fi
 
 if [ "${DB_CONNECTION:-sqlite}" = "sqlite" ]; then
     mkdir -p "$(dirname "$DB_PATH")"
+    if [ "${RUN_DEMO_SEEDER:-true}" = "true" ] && [ ! -s "$DB_PATH" ]; then
+        SHOULD_SEED_DEMO="true"
+    fi
     touch "$DB_PATH"
     export DB_DATABASE="$DB_PATH"
+elif [ "${RUN_DEMO_SEEDER:-true}" = "true" ]; then
+    SHOULD_SEED_DEMO="true"
 fi
 
 php artisan migrate --force
 
-if [ "${RUN_DEMO_SEEDER:-true}" = "true" ]; then
+if [ "$SHOULD_SEED_DEMO" = "true" ]; then
     php artisan db:seed --class=DemoSeeder --force
 fi
 
