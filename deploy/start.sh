@@ -5,6 +5,12 @@ cd /app
 
 DB_PATH="${DB_DATABASE:-/app/database/database.sqlite}"
 
+if [ "$(id -u)" = "0" ]; then
+    mkdir -p "$(dirname "$DB_PATH")"
+    chown -R www-data:www-data /app/storage /app/bootstrap/cache "$(dirname "$DB_PATH")"
+    exec su-exec www-data "$0" "$@"
+fi
+
 if [ "${DB_CONNECTION:-sqlite}" = "sqlite" ]; then
     mkdir -p "$(dirname "$DB_PATH")"
     touch "$DB_PATH"

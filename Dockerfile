@@ -20,7 +20,7 @@ FROM php:8.3-cli-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache icu-dev libzip-dev oniguruma-dev sqlite-dev \
+RUN apk add --no-cache icu-dev libzip-dev oniguruma-dev sqlite-dev su-exec \
     && docker-php-ext-install intl mbstring pdo pdo_sqlite zip
 
 COPY --from=vendor /app /app
@@ -30,8 +30,6 @@ COPY deploy/start.sh /usr/local/bin/start
 RUN chmod +x /usr/local/bin/start \
     && mkdir -p /app/storage/logs /app/bootstrap/cache /data \
     && chown -R www-data:www-data /app/storage /app/bootstrap/cache /app/database /data
-
-USER www-data
 
 EXPOSE 8080
 
