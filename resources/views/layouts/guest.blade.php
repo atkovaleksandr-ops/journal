@@ -359,6 +359,14 @@
 
         <script>
             (() => {
+                const markerKey = 'journal_native_app';
+                const params = new URLSearchParams(window.location.search);
+                const appMarker = params.get('journal_app');
+
+                if (appMarker === 'windows' || appMarker === 'android') {
+                    localStorage.setItem(markerKey, appMarker);
+                }
+
                 const emailSymbolMap = {
                     А: 'a',
                     а: 'a',
