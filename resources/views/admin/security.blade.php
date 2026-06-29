@@ -66,7 +66,14 @@
                                 <td data-label="Пользователь"><strong>{{ $user->name }}</strong></td>
                                 <td data-label="Email">{{ $user->email }}</td>
                                 <td data-label="Действие">
-                                    <a href="{{ route('students.create', ['user_id' => $user->id], false) }}" class="btn btn-primary btn-compact">Создать карточку</a>
+                                    <div class="actions">
+                                        <a href="{{ route('students.create', ['user_id' => $user->id], false) }}" class="btn btn-primary btn-compact">Создать карточку</a>
+                                        <form method="POST" action="{{ route('admin.security.registered-students.destroy', $user, false) }}" onsubmit="return confirm('Удалить этот зарегистрированный аккаунт?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-compact">Удалить</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

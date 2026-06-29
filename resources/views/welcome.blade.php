@@ -13,10 +13,12 @@
             const params = new URLSearchParams(window.location.search);
 
             if (params.has('journal_app')) {
-                localStorage.setItem('journal_app', params.get('journal_app') || '1');
+                const appMarker = params.get('journal_app') || '1';
+                localStorage.setItem('journal_app', appMarker);
+                localStorage.setItem('journal_native_app', appMarker);
             }
 
-            if (localStorage.getItem('journal_app')) {
+            if (localStorage.getItem('journal_app') || localStorage.getItem('journal_native_app')) {
                 document.documentElement.classList.add('is-native-app');
             }
         })();
@@ -147,6 +149,36 @@
             height: 1px;
             opacity: 0;
             pointer-events: none;
+        }
+
+        .app-refresh-button {
+            position: fixed;
+            left: max(14px, env(safe-area-inset-left));
+            top: max(14px, env(safe-area-inset-top));
+            z-index: 80;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            color: #fff;
+            font: inherit;
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1;
+            border: 1px solid rgba(91, 213, 255, 0.38);
+            border-radius: 999px;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            box-shadow: 0 16px 34px rgba(2, 6, 23, 0.42);
+            cursor: pointer;
+        }
+
+        .is-native-app .app-refresh-button {
+            display: inline-flex;
+        }
+
+        .app-refresh-button:active {
+            transform: translateY(1px);
         }
 
         .hero {
@@ -842,7 +874,15 @@
         </footer>
     </div>
 
+    <button type="button" class="app-refresh-button" id="appRefreshButton" aria-label="Обновить страницу" title="Обновить страницу">
+        ↻
+    </button>
+
     <script>
+        document.getElementById('appRefreshButton')?.addEventListener('click', () => {
+            window.location.reload();
+        });
+
         (() => {
             const toggle = document.getElementById('mobile-menu-toggle');
             const links = document.querySelectorAll('.nav-link');

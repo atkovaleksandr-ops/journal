@@ -139,6 +139,16 @@ Route::middleware(['auth', 'role:admin'])
             ]);
         })->name('security');
 
+        Route::delete('/security/registered-students/{user}', function (User $user) {
+            abort_unless($user->role === 'student' && !$user->student, 404);
+
+            $user->delete();
+
+            return redirect()
+                ->route('admin.security')
+                ->with('success', 'Аккаунт без карточки студента удален.');
+        })->name('security.registered-students.destroy');
+
         Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers.index');
         Route::get('/teachers/create', [TeacherController::class, 'create'])->name('teachers.create');
         Route::post('/teachers', [TeacherController::class, 'store'])->name('teachers.store');
