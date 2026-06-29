@@ -80,6 +80,13 @@
             letter-spacing: 0;
         }
 
+        .journal-brand-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex: 0 0 auto;
+        }
+
         .journal-logo span {
             color: #38bdf8;
         }
@@ -2086,22 +2093,19 @@
         }
 
         .app-refresh-button {
-            position: fixed;
-            left: max(14px, env(safe-area-inset-left));
-            top: max(14px, env(safe-area-inset-top));
-            z-index: 1200;
+            flex: 0 0 auto;
             display: none;
             align-items: center;
             justify-content: center;
-            width: 46px;
-            height: 46px;
+            width: 42px;
+            height: 42px;
             border: 1px solid rgba(91, 213, 255, 0.38);
             border-radius: 999px;
             color: #fff;
             background: linear-gradient(135deg, #2563eb, #06b6d4);
-            box-shadow: 0 16px 34px rgba(2, 6, 23, 0.42);
+            box-shadow: 0 10px 24px rgba(2, 6, 23, 0.28);
             font: inherit;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             line-height: 1;
             cursor: pointer;
@@ -2117,11 +2121,9 @@
 
         @media (max-width: 640px) {
             .app-refresh-button {
-                left: max(10px, env(safe-area-inset-left));
-                top: max(10px, env(safe-area-inset-top));
-                width: 42px;
-                height: 42px;
-                font-size: 20px;
+                width: 40px;
+                height: 40px;
+                font-size: 19px;
             }
         }
     </style>
@@ -2131,9 +2133,15 @@
     <div class="journal-layout">
         <header class="journal-navbar">
             <div class="journal-navbar-inner">
-                <a href="{{ route('welcome') }}" class="journal-logo">
-                    Journal<span>.</span>
-                </a>
+                <div class="journal-brand-row">
+                    <a href="{{ route('welcome') }}" class="journal-logo">
+                        Journal<span>.</span>
+                    </a>
+
+                    <button type="button" class="app-refresh-button" id="appRefreshButton" aria-label="Обновить страницу" title="Обновить страницу">
+                        ↻
+                    </button>
+                </div>
 
                 @auth
                     <input type="checkbox" id="app-menu-toggle" class="app-menu-toggle" aria-hidden="true">
@@ -2178,10 +2186,6 @@
             @yield('content')
         </main>
     </div>
-
-    <button type="button" class="app-refresh-button" id="appRefreshButton" aria-label="Обновить страницу" title="Обновить страницу">
-        ↻
-    </button>
 
     <script>
         (() => {

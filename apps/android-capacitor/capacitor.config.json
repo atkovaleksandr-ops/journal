@@ -1,5 +1,9 @@
 {
   "appId": "local.journal.app",
   "appName": "Journal",
-  "webDir": "www"
+  "webDir": "www",
+  "server": {
+    "url": "https://journal-production-858f.up.railway.app?journal_app=android",
+    "cleartext": false
+  }
 }

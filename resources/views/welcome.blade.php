@@ -94,6 +94,13 @@
             text-decoration: none;
         }
 
+        .welcome-brand-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex: 0 0 auto;
+        }
+
         .logo span {
             color: #38bdf8;
         }
@@ -152,24 +159,21 @@
         }
 
         .app-refresh-button {
-            position: fixed;
-            left: max(14px, env(safe-area-inset-left));
-            top: max(14px, env(safe-area-inset-top));
-            z-index: 80;
+            flex: 0 0 auto;
             display: none;
             align-items: center;
             justify-content: center;
-            width: 46px;
-            height: 46px;
+            width: 42px;
+            height: 42px;
             color: #fff;
             font: inherit;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             line-height: 1;
             border: 1px solid rgba(91, 213, 255, 0.38);
             border-radius: 999px;
             background: linear-gradient(135deg, #2563eb, #06b6d4);
-            box-shadow: 0 16px 34px rgba(2, 6, 23, 0.42);
+            box-shadow: 0 10px 24px rgba(2, 6, 23, 0.28);
             cursor: pointer;
         }
 
@@ -694,7 +698,12 @@
 <body>
     <div class="page">
         <header class="header">
-            <a href="{{ route('welcome') }}" class="logo">Journal<span>.</span></a>
+            <div class="welcome-brand-row">
+                <a href="{{ route('welcome') }}" class="logo">Journal<span>.</span></a>
+                <button type="button" class="app-refresh-button" id="appRefreshButton" aria-label="Обновить страницу" title="Обновить страницу">
+                    ↻
+                </button>
+            </div>
 
             <input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-hidden="true">
             <label for="mobile-menu-toggle" class="menu-button">Меню</label>
@@ -873,10 +882,6 @@
             © 2026 Journal - электронный журнал для учебного процесса
         </footer>
     </div>
-
-    <button type="button" class="app-refresh-button" id="appRefreshButton" aria-label="Обновить страницу" title="Обновить страницу">
-        ↻
-    </button>
 
     <script>
         document.getElementById('appRefreshButton')?.addEventListener('click', () => {
