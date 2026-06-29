@@ -2087,22 +2087,23 @@
 
         .app-refresh-button {
             position: fixed;
-            right: max(18px, env(safe-area-inset-right));
-            bottom: max(18px, env(safe-area-inset-bottom));
+            left: max(14px, env(safe-area-inset-left));
+            top: max(14px, env(safe-area-inset-top));
             z-index: 1200;
             display: none;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            min-height: 46px;
-            padding: 0 16px;
+            width: 46px;
+            height: 46px;
             border: 1px solid rgba(91, 213, 255, 0.38);
             border-radius: 999px;
             color: #fff;
             background: linear-gradient(135deg, #2563eb, #06b6d4);
             box-shadow: 0 16px 34px rgba(2, 6, 23, 0.42);
             font: inherit;
+            font-size: 22px;
             font-weight: 800;
+            line-height: 1;
             cursor: pointer;
         }
 
@@ -2116,11 +2117,11 @@
 
         @media (max-width: 640px) {
             .app-refresh-button {
-                right: max(12px, env(safe-area-inset-right));
-                bottom: max(12px, env(safe-area-inset-bottom));
-                min-height: 44px;
-                padding: 0 14px;
-                font-size: 14px;
+                left: max(10px, env(safe-area-inset-left));
+                top: max(10px, env(safe-area-inset-top));
+                width: 42px;
+                height: 42px;
+                font-size: 20px;
             }
         }
     </style>
@@ -2178,8 +2179,8 @@
         </main>
     </div>
 
-    <button type="button" class="app-refresh-button" id="appRefreshButton" aria-label="Обновить страницу">
-        ↻ Обновить
+    <button type="button" class="app-refresh-button" id="appRefreshButton" aria-label="Обновить страницу" title="Обновить страницу">
+        ↻
     </button>
 
     <script>

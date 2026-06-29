@@ -11,6 +11,9 @@
 
     <form action="{{ route('students.store') }}" method="POST" class="stack">
         @csrf
+        @if($pendingUser)
+            <input type="hidden" name="user_id" value="{{ $pendingUser->id }}">
+        @endif
 
         <div class="form-grid">
             <div class="field">
@@ -44,7 +47,10 @@
 
             <div class="field field-full">
                 <label for="email">Email для входа</label>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" placeholder="student@example.com">
+                <input id="email" type="email" name="email" value="{{ old('email', $pendingUser?->email) }}" placeholder="student@example.com" @readonly($pendingUser)>
+                @if($pendingUser)
+                    <p class="field-hint">Email взят из зарегистрированного аккаунта и останется привязанным к карточке студента.</p>
+                @endif
                 @error('email') <div class="error-message">{{ $message }}</div> @enderror
             </div>
 
@@ -54,7 +60,13 @@
                     <input id="login_password" type="password" name="login_password" value="{{ old('login_password') }}" placeholder="Если оставить пустым: student123" autocomplete="new-password">
                     <button type="button" class="btn btn-secondary btn-compact" data-toggle-password="#login_password">Показать</button>
                 </div>
-                <p class="field-hint">Этот пароль можно выдать студенту вместе с email.</p>
+                <p class="field-hint">
+                    @if($pendingUser)
+                        Оставьте поле пустым, чтобы не менять пароль уже зарегистрированного аккаунта.
+                    @else
+                        Этот пароль можно выдать студенту вместе с email.
+                    @endif
+                </p>
                 @error('login_password') <div class="error-message">{{ $message }}</div> @enderror
             </div>
         </div>

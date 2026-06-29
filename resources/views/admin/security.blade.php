@@ -66,7 +66,7 @@
                                 <td data-label="Пользователь"><strong>{{ $user->name }}</strong></td>
                                 <td data-label="Email">{{ $user->email }}</td>
                                 <td data-label="Действие">
-                                    <a href="{{ route('students.create', [], false) }}" class="btn btn-primary btn-compact">Создать карточку</a>
+                                    <a href="{{ route('students.create', ['user_id' => $user->id], false) }}" class="btn btn-primary btn-compact">Создать карточку</a>
                                 </td>
                             </tr>
                         @endforeach

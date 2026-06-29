@@ -59,11 +59,19 @@ class StudentController extends Controller
     /**
      * Форма создания студента
      */
-    public function create()
+    public function create(Request $request)
     {
         $groups = Group::orderBy('name')->get();
+        $pendingUser = null;
 
-        return view('students.create', compact('groups'));
+        if ($request->filled('user_id')) {
+            $pendingUser = User::whereKey($request->integer('user_id'))
+                ->where('role', 'student')
+                ->doesntHave('student')
+                ->first();
+        }
+
+        return view('students.create', compact('groups', 'pendingUser'));
     }
 
     /**
@@ -71,17 +79,50 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
+        $pendingUser = null;
+
+        if ($request->filled('user_id')) {
+            $pendingUser = User::whereKey($request->integer('user_id'))
+                ->where('role', 'student')
+                ->doesntHave('student')
+                ->first();
+
+            if ($pendingUser) {
+                $request->merge(['email' => $pendingUser->email]);
+            }
+        }
+
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'student_number' => ['nullable', 'string', 'max:255', 'unique:students,student_number'],
-            'email' => ['nullable', 'email', 'max:255', 'unique:students,email', 'unique:users,email'],
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                'unique:students,email',
+                Rule::unique('users', 'email')->ignore($pendingUser?->id),
+            ],
             'login_password' => ['nullable', 'string', 'min:6', 'max:255'],
             'group_id' => ['required', 'exists:groups,id'],
+            'user_id' => ['nullable', 'exists:users,id'],
         ]);
 
-        $password = $validated['login_password'] ?: self::DEFAULT_STUDENT_PASSWORD;
-        $validated['login_password'] = $password;
+        if ($pendingUser) {
+            $validated['user_id'] = $pendingUser->id;
+            $validated['email'] = $pendingUser->email;
+            $password = $validated['login_password'] ?: null;
+
+            if ($password) {
+                $validated['login_password'] = $password;
+            } else {
+                unset($validated['login_password']);
+            }
+        } else {
+            unset($validated['user_id']);
+            $password = $validated['login_password'] ?: self::DEFAULT_STUDENT_PASSWORD;
+            $validated['login_password'] = $password;
+        }
 
         $student = Student::create($validated);
 
