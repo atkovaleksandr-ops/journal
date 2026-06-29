@@ -125,6 +125,10 @@ Route::middleware(['auth', 'role:admin'])
                     ->orWhereNull('email')
                     ->latest()
                     ->get(),
+                'registeredStudentsWithoutCard' => User::where('role', 'student')
+                    ->doesntHave('student')
+                    ->latest()
+                    ->get(),
                 'teachersWithoutSubjects' => User::where('role', 'teacher')
                     ->doesntHave('subjects')
                     ->latest()

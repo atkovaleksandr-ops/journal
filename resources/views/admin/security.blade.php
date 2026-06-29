@@ -31,10 +31,50 @@
             <span class="stat-label">Нужно выдать вход</span>
         </div>
         <div class="stat-card">
+            <span class="stat-value">{{ ($registeredStudentsWithoutCard ?? collect())->count() }}</span>
+            <span class="stat-label">Без карточки студента</span>
+        </div>
+        <div class="stat-card">
             <span class="stat-value">{{ $teachersWithoutSubjects->count() }}</span>
             <span class="stat-label">Нужно назначить предметы</span>
         </div>
     </div>
+
+    <section class="panel" style="margin-top: 22px;">
+        <div class="page-header" style="margin-bottom: 12px;">
+            <div>
+                <h2>Зарегистрированные аккаунты без карточки студента</h2>
+                <p class="page-subtitle">Эти пользователи создали аккаунт через регистрацию, но их email еще не привязан к студенту из списка.</p>
+            </div>
+        </div>
+
+        @if(($registeredStudentsWithoutCard ?? collect())->isEmpty())
+            <div class="empty-state">Нет зарегистрированных аккаунтов без карточки студента.</div>
+        @else
+            <div class="table-wrap">
+                <table class="responsive-table">
+                    <thead>
+                        <tr>
+                            <th>Пользователь</th>
+                            <th>Email</th>
+                            <th>Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($registeredStudentsWithoutCard as $user)
+                            <tr>
+                                <td data-label="Пользователь"><strong>{{ $user->name }}</strong></td>
+                                <td data-label="Email">{{ $user->email }}</td>
+                                <td data-label="Действие">
+                                    <a href="{{ route('students.create', [], false) }}" class="btn btn-primary btn-compact">Создать карточку</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </section>
 
     <section class="panel" style="margin-top: 22px;">
         <div class="page-header" style="margin-bottom: 12px;">

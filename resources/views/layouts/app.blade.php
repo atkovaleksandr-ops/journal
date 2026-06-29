@@ -2084,6 +2084,45 @@
                 width: 100%;
             }
         }
+
+        .app-refresh-button {
+            position: fixed;
+            right: max(18px, env(safe-area-inset-right));
+            bottom: max(18px, env(safe-area-inset-bottom));
+            z-index: 1200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 46px;
+            padding: 0 16px;
+            border: 1px solid rgba(91, 213, 255, 0.38);
+            border-radius: 999px;
+            color: #fff;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            box-shadow: 0 16px 34px rgba(2, 6, 23, 0.42);
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .journal-native-app .app-refresh-button {
+            display: inline-flex;
+        }
+
+        .app-refresh-button:active {
+            transform: translateY(1px);
+        }
+
+        @media (max-width: 640px) {
+            .app-refresh-button {
+                right: max(12px, env(safe-area-inset-right));
+                bottom: max(12px, env(safe-area-inset-bottom));
+                min-height: 44px;
+                padding: 0 14px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 
@@ -2139,7 +2178,32 @@
         </main>
     </div>
 
+    <button type="button" class="app-refresh-button" id="appRefreshButton" aria-label="Обновить страницу">
+        ↻ Обновить
+    </button>
+
     <script>
+        (() => {
+            const markerKey = 'journal_native_app';
+            const params = new URLSearchParams(window.location.search);
+            const appMarker = params.get('journal_app');
+
+            if (appMarker === 'windows' || appMarker === 'android') {
+                localStorage.setItem(markerKey, appMarker);
+            }
+
+            if (!localStorage.getItem(markerKey)) {
+                return;
+            }
+
+            document.documentElement.classList.add('journal-native-app');
+
+            const refreshButton = document.getElementById('appRefreshButton');
+            refreshButton?.addEventListener('click', () => {
+                window.location.reload();
+            });
+        })();
+
         (() => {
             const toggle = document.getElementById('app-menu-toggle');
             let lockedScrollY = 0;
